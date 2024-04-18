@@ -1662,7 +1662,7 @@ DLOG groups:<a href="#section-3.2-8" class="pilcrow">¶</a></p>
 Selective disclosure of witnesses Note that in the following
 descriptions, all witnesses are assumed to be kept secret, i.e., none of
 them is disclosed to the verifier. In case it is required to disclose
-<code>w_j</code>, as is the case, e.g., in the context of attribute-based
+<code>w[j]</code>, as is the case, e.g., in the context of attribute-based
 credential systems, the relation to be proven can be rewritten as
 follows:<a href="#section-3.2-11" class="pilcrow">¶</a></p>
 <p id="section-3.2-12">R_dl'= {
@@ -1674,8 +1674,8 @@ follows:<a href="#section-3.2-11" class="pilcrow">¶</a></p>
 <p id="section-3.2-13">where<a href="#section-3.2-13" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.2-14">
 <pre>
-(Y_1', ... , Y_m')                                   &amp;:= (Y_1, ... , Y_m)-\varphi(0, ... , 0, w_j, 0, ... , 0)\text{ and}\\
-  \psi(w_1, ... , w_{j-1}, w_{j+1}, ... , w_n) &amp;:= \varphi(w_1, ... , w_{j-1}, 0, w_{j+1}, ... , w_n).
+(Y_1', ... , Y_m') = (Y_1, ... , Y_m)-\varphi(0, ... , 0, w[j], 0, ... , 0)\text{ and}\\
+  \psi(w_1, ... , w_{j-1}, w_{j+1}, ... , w_n) = \varphi(w_1, ... , w_{j-1}, 0, w_{j+1}, ... , w_n).
 </pre><a href="#section-3.2-14" class="pilcrow">¶</a>
 </div>
 <p id="section-3.2-15">However, the following <em>defines neither the morphism nor the label
@@ -1723,8 +1723,8 @@ DlogTemplate.verifier(T_vec, c, s_vec)
 (s_1, ... , s_n) = s_vec
 (T_1, ... , T_m) = T_vec
 e = FromBytes(c)
-for i =1, ... , n: check s_i in GF(p)
-for j =1, ... , m: check T_j in GG
+for i = 1, ... , n: check s_i in GF(p)
+for j = 1, ... , m: check T[j] in GG
 return ((T_1 + eY_1, ... , T_m + eY_m) = \varphi(s_1, ... , s_n))
 </pre><a href="#section-3.2-23" class="pilcrow">¶</a>
 </div>
@@ -1789,13 +1789,13 @@ case where <code>k&lt;n</code>, as otherwise the linear equations would uniquely
 determine the witnesses, which is not desirable in our context.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
 <p id="section-3.3-7">The following relation <code>{R_lin}'</code> is now
 equivalent to that specified by <code>{R_lin}</code>:<a href="#section-3.3-7" class="pilcrow">¶</a></p>
-<p id="section-3.3-8">R_lin'=\set{((Y_1, ... , Y_m), (w_1, ... , w_{n-k})) :
-(Y_1, ... , Y_m)=\psi(w_1, ... , w_{n-k})}<a href="#section-3.3-8" class="pilcrow">¶</a></p>
+<p id="section-3.3-8">R_lin' = {
+    ((Y_1, ... , Y_m), (w_1, ... , w_{n-k})) :
+        (Y_1, ... , Y_m) = \psi(w_1, ... , w_{n-k})
+  }<a href="#section-3.3-8" class="pilcrow">¶</a></p>
 <p id="section-3.3-9">where<a href="#section-3.3-9" class="pilcrow">¶</a></p>
-<p id="section-3.3-10">\begin{aligned}
-  \psi(w_1, ... , w_{n-k}) &amp;:= \varphi(w_1, ... , w_{n-k}, -\sum_{i =1}^{n-k}a_{1i}w_i, ... , -\sum_{i = 1}^{n-k}a_{ki}w_i)\text{ and}<br>
-  (Y_1', ... , Y_m')   &amp;:= (Y_1, ... , Y_m) - \varphi(0, ... , 0, b_1, ... , b_k).
-  \end{aligned}<a href="#section-3.3-10" class="pilcrow">¶</a></p>
+<p id="section-3.3-10">\psi(w_1, ... , w_{n-k}) = \varphi(w_1, ... , w_{n-k}, -\sum_{i = 1}^{n-k}a_{1i}w_i, ... , -\sum_{i = 1}^{n-k}a_{ki}w_i)\text{ and}<br>
+  (Y_1', ... , Y_m')   = (Y_1, ... , Y_m) - \varphi(0, ... , 0, b_1, ... , b_k).<a href="#section-3.3-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec_instantiations">
@@ -1891,7 +1891,7 @@ opening of a Pedersen commitment means proving knowledge of
             <li class="normal" id="section-3.4.4-2.2">
               <p id="section-3.4.4-2.2.1"><code>Rep.morphism_label()</code> returns<a href="#section-3.4.4-2.2.1" class="pilcrow">¶</a></p>
 <p id="section-3.4.4-2.2.2">
-\hash(\texttt{\textquotesingle{}representation\textquotesingle}, ~{curve}\mathbf{\mid}~<code>Serialize(G_1) , ~*s , ~</code>Serialize<code>(G_m) , ~</code>Serialize<code>(Y))</code>$<a href="#section-3.4.4-2.2.2" class="pilcrow">¶</a></p>
+\hash({representation}, ~{curve}\mathbf{\mid}~<code>Serialize(G_1) , ~*s , ~</code>Serialize<code>(G_m) , ~</code>Serialize<code>(Y))</code>$<a href="#section-3.4.4-2.2.2" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.4.4-3">::: example
@@ -1925,7 +1925,7 @@ ensure that each <code>Y_i</code> is a commitment to
 either <code>0</code> or <code>1</code>, thus implying the bound on <code>w_1</code>.<a href="#section-3.4.4-9" class="pilcrow">¶</a></p>
 <p id="section-3.4.4-10">The different clauses can
 finally be composed using nested protocol compositions from
-<span><a href="#sec_composition" class="internal xref">2.5</a> (<a href="#sec_composition" class="auto internal xref">Section 6</a>)</span>.
+(#sec:composition).
 :::<a href="#section-3.4.4-10" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1938,11 +1938,11 @@ finally be composed using nested protocol compositions from
         </h3>
 <p id="section-3.5-1">The batchable form can take advantage of the following fact. Given
 <code>\ell</code> verification equations of the form:<a href="#section-3.5-1" class="pilcrow">¶</a></p>
-<p id="section-3.5-2">T_i + c_i Y_i = \sum_j s_j G_{i, j}<a href="#section-3.5-2" class="pilcrow">¶</a></p>
-<p id="section-3.5-3">for <code>i =1, ... , \ell</code>, the
+<p id="section-3.5-2">T_i + c_i Y_i = \sum[j] s[j] G_{i, j}<a href="#section-3.5-2" class="pilcrow">¶</a></p>
+<p id="section-3.5-3">for <code>i = 1, ... , \ell</code>, the
 verifier can sample a random vector of coefficients
 <code>a_vec in GF(p)^\ell</code> and instead test:<a href="#section-3.5-3" class="pilcrow">¶</a></p>
-<p id="section-3.5-4">\left(\sum_{i =1}^{\ell} a_i T_i\right) + \left(\sum_{i =1}^{\ell} a_i *  c_i Y_i \right) = \left(\sum_{i =1}^{\ell} a_i * \sum_j s_j G_{i, j}\right).<a href="#section-3.5-4" class="pilcrow">¶</a></p>
+<p id="section-3.5-4">\left(\sum_{i = 1}^{\ell} a_i T_i\right) + \left(\sum_{i = 1}^{\ell} a_i *  c_i Y_i \right) = \left(\sum_{i = 1}^{\ell} a_i * \sum[j] s[j] G_{i, j}\right).<a href="#section-3.5-4" class="pilcrow">¶</a></p>
 <p id="section-3.5-5">If the matrix <code>G_{i, j}</code> of generators has identical rows, by linearity
 the right-hand side can be computed as a single scalar product. If the
 statements <code>Y_i</code>'s have identical rows, by linearity the second term in
@@ -1952,7 +1952,7 @@ multi-scalar multiplication, minimizing the number of group operations
 needed:<a href="#section-3.5-6" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.5-7">
 <pre>
-\left(\sum_{i =1}^{\ell} a_i T_i\right) + \left(\sum_{i =1}^{\ell} (a_i *  c_i) Y_i \right) + \left(\sum_{i =1}^{\ell}\sum_j (-a_i *  s_j) G_{i, j}\right) = 0
+\left(\sum_{i = 1}^{\ell} a_i T_i\right) + \left(\sum_{i = 1}^{\ell} (a_i *  c_i) Y_i \right) + \left(\sum_{i = 1}^{\ell}\sum[j] (-a_i *  s[j]) G_{i, j}\right) = 0
 </pre><a href="#section-3.5-7" class="pilcrow">¶</a>
 </div>
 <p id="section-3.5-8">The random vector <code>a_vec</code> can be <em>deterministically</em> generated by
@@ -2087,7 +2087,7 @@ return (left.verifier(T_0, c, s_0) and right.verifier(T_1, c, s_1))
 <p id="section-6.1-15"><code>AndComposition.label()</code> is computed as:<a href="#section-6.1-15" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.1-16">
 <pre>
-  H((\texttt{\textquotesingle{}and-composition\textquotesingle}\mathbf{\mid}~`left.label()` , ~`right.label()`)
+  H(({and-composition}\mathbf{\mid}~`left.label()` , ~`right.label()`)
 
 The supported hash functions are described in [@draft-orru-zkproof-fs].
 </pre><a href="#section-6.1-16" class="pilcrow">¶</a>
@@ -2141,9 +2141,9 @@ R_or = {
 </div>
 <p id="section-6.2-3">The statement <code>Y</code> is the pair <code>(Y_0, Y_1)</code> of the composing statements,
 and the witness <code>w</code> is the pair <code>(w_0, w_1)</code> of the witnesses for the
-respective relation. One of the witness can be set to <code>\mathsf{None}</code>.
-In the following protocol specification, let <code>j</code> be such that <code>w_j</code> is
-known to the prover, whereas without loss of generality <code>w_{1-j}</code> is
+respective relation. One of the witness can be set to <code>None</code>.
+In the following protocol specification, let <code>j</code> be such that <code>w[j]</code> is
+known to the prover, whereas without loss of generality <code>w[1-j]</code> is
 assumed to be unknown to the prover.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
 <p id="section-6.2-4">On a high level, the protocol works as follows. Using the simulator, the
 prover first simulates a transcript for the unknown witness (keeping the
@@ -2170,12 +2170,12 @@ the following algorithms:<a href="#section-6.2-5" class="pilcrow">¶</a></p>
 OrComposition.prover_commit(w_vec)
 
 Prover = [left, right]
-(w_0, w_1)= w_vec, and let `j in \bin` be the first index for which `w[j]!= None`
-(T[j], pstate[j]) &lt;- Prover[j].prover_commit(Y_j, w_j)
+(w_0, w_1) = w_vec, and let j in [0, 1] be the first index for which w[j] != None
+(T[j], pstate[j]) &lt;- Prover[j].prover_commit(Y[j], w[j])
 s[1-j] &lt;- Prover[1-j].simulate_response()
-choose a random `c_{1-j}` in `\mathcal{C}`
-T[1-j]&lt;- Prover[1-j].simulate_commitment(c_{1-j}, s_{1-j})
-return (T_vec, pstate) = ((T_0, T_1), (pstate[j], c_{1-j}, s_{1-j}))
+choose a random c[1-j] in \mathcal{C}
+T[1-j] &lt;- Prover[1-j].simulate_commitment(c[1-j], s[1-j])
+return (T_vec, pstate) = ((T_0, T_1), (pstate[j], c[1-j], s[1-j]))
 </pre><a href="#section-6.2-8" class="pilcrow">¶</a>
 </div>
 <p id="section-6.2-9">-<a href="#section-6.2-9" class="pilcrow">¶</a></p>
@@ -2204,7 +2204,7 @@ return (left.verifier(T_0, c_0, s_0) and right.verifier(T_1, c_1, s_1))
             <p id="section-6.2-13.1.1"><code>OrComposition.label()</code> is computed as:<a href="#section-6.2-13.1.1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.2-13.1.2">
 <pre>
-H((\texttt{\textquotesingle{}or-composition\textquotesingle}\mathbf{\mid}~`left.label()` , ~`right.label()`)
+H(({or-composition}\mathbf{\mid}~`left.label()` , ~`right.label()`)
 </pre><a href="#section-6.2-13.1.2" class="pilcrow">¶</a>
 </div>
 </li>
