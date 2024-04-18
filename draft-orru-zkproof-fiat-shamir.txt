@@ -1,0 +1,583 @@
+
+
+
+
+Zkproof                                                          M. Orrù
+Internet-Draft                                                      CNRS
+Intended status: Informational                             18 April 2024
+Expires: 20 October 2024
+
+
+                         Fiat-Shamir Heuristic
+                 draft-orru-zkproof-fiat-shamir-latest
+
+Abstract
+
+   This document describes the Fiat-Shamir transform.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://mmaker.github.io/stdsigma/draft-sigma-protocols.html.  Status
+   information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-orru-zkproof-fiat-shamir/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/mmaker/stdsigma.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 20 October 2024.
+
+Copyright Notice
+
+   Copyright (c) 2024 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Syntax
+       1.1.1.  Constants
+       1.1.2.  Hash Registry
+       1.1.3.  Computing the challenge and seeding the commitment
+       1.1.4.  Non-interactive proofs
+       1.1.5.  Batchable Proofs
+       1.1.6.  Short Proofs
+     1.2.  Input validation
+   2.  Introduction
+   3.  Technical Overview
+   4.  IO Pattern
+   5.  Duplex Hash
+   6.  Pover state
+   7.  Serialization and conversion of Elements
+   8.  Additional Material
+   Author's Address
+
+1.  Introduction
+
+   The interactive versions of the Sigma protocols presented in this
+   document are not fit for practical applications, due to subtle yet
+   impactful details in their security guarantees.  In practice, public-
+   coin protocols such as Sigma protocols can be converted into non-
+   interactive ones through the Fiat and Shamir heuristic [@C:FiaSha86]
+   and subsequent work, e.g., by Bernhard, Pereira and
+   Warinschi [@AC:BerPerWar12].
+
+   The underlying idea is to replace the verifier with a
+   cryptographically secure hash function, hashing the context from the
+   protocol and the previous message sent by the prover.
+
+   ::: warning Interactive Sigma protocols illustrated in this spec
+   *must not* be used interactively. :::
+
+1.1.  Syntax
+
+   When using a hash function we will employ comma-separated values to
+   indicate values that are concatenated.  To mitigate attacks and allow
+   for state cloning, we also separate values with semi-colons to
+   indicate that they must appear in a subsequent block and that the
+   previous is padded with zeros.  For instance, with the writing
+   $\hash(a \,\textbf{,}~b \,\mathbf{\mid}~c)$ we denote the hashing of
+   $a$ concatenated to $b$, then padded with the null byte until to
+   reach the closest multiple of BLOCK_LEN bytes added, then and
+   concatenate the resulting bit string to $c$.
+
+1.1.1.  Constants
+
+   Different hash functions may rely on different constants.  We define
+   some of the parameters associated to the hash function that will be
+   used throughout this spec.
+
+   ::: center Const name Notes ------------------------ ----------------
+   ---------------------------------------------------------------------
+   ------------------------ DOMSEP}$ Domain separator for this standard.
+   Fixed to $\texttt{\textquotesingle{}zkpstd/sigma/0.1\textquotesingle.
+   BLOCK_LEN Length of a hash block DIGEST_LEN Digest length :::
+
+1.1.2.  Hash Registry
+
+   This is the set of all supported hash functions.  They take an
+   arbitrary length sequence of bytes as input, and output 32 bytes of
+   entropy.
+
+   ::: center Hash Source BLOCK_LEN}$ $\texttt{DIGEST_LEN ----------
+   ---------------- ----------------------- ------------------------ --
+   blake2b [@ACNS:ANWW13] 128 64 sha3-256 [@EC:BDPA13] 136 32 :::
+
+   Supported hash functions must all have $BLOCK_LEN\geq 32$. We define
+   labels and constant strings so that their length is always at most 32
+   bytes.  If $DIGEST_LEN\ge 32$, we implicitly assume that the
+   implementation considers only the least significant bytes and
+   discards the remainder of the hash output when exactly 32 bytes bytes
+   are needed.
+
+1.1.3.  Computing the challenge and seeding the commitment
+
+   Relying on a hash function allows us to both compute the challenge
+   and generate the commitment securely.  We define the following
+   auxiliary variables that may be pre-computed during the call of
+   $SigmaProtocol.new(ctx, Y)$. All variables will have fixed length
+   DIGEST_LEN so to avoid canonicalization attacks.
+
+1.1.3.1.  Seeding the commitment
+
+   The method $SigmaProtocol.prover_commit()$ is a randomized function
+   that generates a random element, unique per each execution.  The
+   commitment _should_ be seeded as follows:
+
+   If the output length DIGEST_LEN of the hash function is not
+   sufficient to provide enough entropy for the commitment, the seed may
+   be expanded with a PRNG to provide the quantity of random bytes
+   desired.
+
+1.1.3.2.  Computing the challenge
+
+   The method $SigmaProtocol.challenge(\mu, T)$ is implemented as
+   follows in order to produce a random challenge.
+
+   If no message is being set, i.e. if $\mu= \mathsf{None}$, then the
+   implementation may decide to skip the computation of $\text{hm}$ and
+   consider it empty.  This method is fixed for all implementations of
+   SigmaProtocol.  Note that the state of the hash function is partially
+   shared between the commitment seed inputs and the challenge
+   computation.  Implementors may choose to store the partial hash state
+   before generating the commitment, and reuse it when computing the
+   challenge.
+
+1.1.4.  Non-interactive proofs
+
+   We define two _public methods_ for generating proofs, meant to be
+   exposed externally: short_proof, and batchable_proof.  Since the
+   challenge is computed deterministically from the commitment and the
+   statement, it is not necessary to include the full transcript in a
+   proof, as it can be deduced in the verification phase.
+
+   Short proofs are the most efficient if the protocol contains at least
+   an _AND_ composition, and the gain in size is measured as $|\mathbf
+   T| - DIGEST_LEN$. (Note: the length of the commitment is the length
+   of the statement.)  Batchable proofs are the canonical forms of
+   proofs.  Provers in the batchable form may raise an exception if the
+   statement is not valid.  Proofs are seen as fixed-length bit strings,
+   whose exact length can be inferred from the statement during
+   initialization of the Sigma protocol.
+
+   ::: remark Witness validation In the following we assume correctness
+   of the witness $w$ for the given statement $Y$. This can be ensured,
+   e.g., by a higher-level application, or by running
+   $SigmaProtocol.verifier(T, c, s)$ before sending the resulting proof.
+   :::
+
+1.1.5.  Batchable Proofs
+
+   Prover algorithm.  The public function
+      $SigmaProtocol.batchable_proof( w, \mu)$ computes:
+
+      1.  $(T,pstate)\getsSigmaProtocol.prover_commit( w)$.
+
+      2.  $c \gets SigmaProtocol.challenge(\mu,T)$
+
+      3.  $s\getsSigmaProtocol.prover_response(pstate, c)$. Return
+          $Serialize(T)$ concatenated to $Serialize(\mathbf s)$
+
+      The challenge $c$ is not provided within a batchable proof since
+      it can be re-computed from the commitment.
+
+   Verifier algorithm.  The verifier's algorithm
+      $SigmaProtocol.batchable_verify(\pi, \mu)$ works as follows:
+
+      1.  $(T,s) \coloneqqDeserialize(\pi)$
+
+      2.  $c \gets SigmaProtocol.challenge(\mu, T)$
+
+      3.  Return whatever $SigmaProtocol.verifier(T,c, s)$ returns.
+
+      ::: warning Input validation The case of batched verification must
+      include an input validation sub-routine that asserts the statement
+      and commitments are in question.  In the case of elliptic curves,
+      this boils down to point validation.  Failure to properly check
+      that a commitment is in the group could lead to subgroup
+      attacks [@EC:VanWie96; @C:LimLee97] or invalid curve
+      attacks [@C:BieMeyMul00; @RSA:BBPV12]. :::
+
+1.1.6.  Short Proofs
+
+   Prover algorithm.  A new proof $SigmaProtocol.short_proof(w, \mu)$ is
+      built as follows:
+
+      1.  $(T,pstate)\getsSigmaProtocol.prover_commit(w)$.
+
+      2.  $c \gets SigmaProtocol.challenge(\mu, T)$
+
+      3.  $\mathbf s\getsSigmaProtocol.prover_response(pstate,c)$.
+
+      4.  Return $Serialize(c)$ concatenated to $Serialize(s)$.
+
+      The commitment $T$ is not provided within a short proof since it
+      can be calculated again.
+
+   Verifier algorithm.  The verifier's algorithm
+      $SigmaProtocol.short_verify(\pi, \mu)$ works as follows:
+
+      1.  $(c, s) \coloneqqDeserialize(\pi)$
+
+      2.  $T\gets SigmaProtocol.simulate_commitment(c, s)\,.$
+
+      3.  $c^* \gets SigmaProtocol.challenge(\mu, T)$
+
+      4.  Check whether $c=c^*$. Output $\pctrue$ if this is the case,
+          and $\pcfalse$ otherwise.
+
+   If input parsing fails, an exception should be raised.  If
+   verification fails, an exception should be raised.  Otherwise, the
+   verifier outputs $\pctrue$. Optionally, the implementation can choose
+   to return the parsed statement.
+
+   ::: remark Availability of the short form While the short form as
+   described here is applicable to all Sigma protocols currently covered
+   by this document, it cannot be used for protocols where $T$ is not
+   uniquely determined by $c$ and $s$, as is the case, e.g., for
+   ZKBoo [@USENIX:GiaMadOrl16], one-out-of-many proofs [@EC:GroKoh15],
+   or protocols, where a randomized signature is sent and proven correct
+   subsequently, e.g., [@RSA:PoiSan16; @AC:CamChaShe08].
+
+   A trade-off is presented, e.g., by Bobolz et al. [@EPRINT:BEHF21],
+   requiring an additional algorithm to shorten a full transcript to a
+   compressed form which still allows for unique reconstruction of the
+   transcript. :::
+
+1.2.  Input validation
+
+2.  Introduction
+
+   We show how to perform Fiat-Shamir on any public-coin protocol,
+   providing randomness for the prover and secure generation of random
+   coins for the verifier.  Informally, a non-interactive zero-knowledge
+   proof constructed via the Fiat-Shamir heuristic, the verifier (random
+   oracle) is replaced with a duplex sponge.  Messages from the prover
+   are treated as ABSORB calls, while challenges are treated as SQUEEZE
+   calls.  We will see this in detail below.  Core features are:
+
+   *  Support custom hash function, including algebraic hashes in a
+      unified generic way.
+
+   *  Retro-compatibility with the NIST API.
+
+   *  Efficiency: minimizing the number of hash invocations while
+      maintaining security, and (whenever possible) preprocessing
+      information that is public or carried across protocols.
+
+   *  Private randomness generation.
+
+   *  The API makes it impossible to provide two different challenges
+      for the same prover message.  The prover's zk randomness is bound
+      to the protocol transcript, without making the proof
+      deterministic.
+
+3.  Technical Overview
+
+   The protocol consists in:
+
+   *  Generating a string encoding the sequence of input and output
+      lengths (the IO pattern)
+
+   *  An API absorbing and squeezing native elements (Arthur) that is
+      initialized from the IO Pattern
+
+   *  An API for generating private randomness securely (Merlin) that
+      internally uses Arthur
+
+4.  IO Pattern
+
+   An IO pattern is a utf8-encoded string that specifies the protocol in
+   a simple, non-ambiguous, human-readable format.  A typical example is
+   the following:
+
+   domain-separator A32generator A32public-key R A32commitment
+   S32challenge A32response
+
+   The domain-separator is a user-specified string uniquely identifying
+   the end-user application (to avoid cross-protocol attacks).
+
+   The letter A indicates the absorption of a public input (an ABSORB),
+   while the letter S indicates the squeezing (a SQUEEZE) of a
+   challenge.  The letter R indicates a ratcheting operation: ratcheting
+   means invoking the hash function even on an incomplete block.  It
+   provides forward secrecy and allows it to start from a clean rate.
+
+   After the operation type, is the number of elements in base 10 that
+   are being absorbed/squeezed.
+
+   Then, follows the label associated with the element being absorbed/
+   squeezed.  This often comes from the underlying description of the
+   protocol.  The label cannot start with a digit or contain the NULL
+   byte.
+
+   Each operation is separated by the NULL byte.
+
+   The IO pattern string can be parsed as a queue of the form
+   (Operation, Length), where consecutive Operations must be merged into
+   one adding the length, and the length of ratchet operations is
+   conventionally set to 0.  The IO pattern above translated to the
+   queue:
+
+   (A, 64) (R, 0) (A, 32) (S, 32) (A, 32)
+
+5.  Duplex Hash
+
+   In addition to the IO pattern, the protocol must also designate a
+   hash function.
+
+   We focus here on permutation functions, but already dispose of a
+   generic bridging interface for the NIST API that we omit for now
+   here.  Fix a permutation function P (a valid choice here is keccak-
+   f[1600]) acting on on R+C elements (called _native elements_), where
+   R is called _rate_ (for keccak-f[1600] this would be R=136), and C is
+   the capacity (for keccak-f[1600] this would be C=64).
+
+   More specifically, we build a [duplex sponge in overwrite
+   mode]{.underline} (https://en.wikipedia.org/wiki/
+   Sponge_function#Overwrite_mode) placing the rate in the least
+   significant indices.  Note that this definition is generic over bytes
+   or arbitrary fields and that the definition below is tail-recursive,
+   and State is a mutable reference to the hash state.
+
+   *  START(IV) -> State
+
+      [IV is assumed to be 32 bytes]
+
+      Create an array State of size C + R.
+
+      Write IV in the capacity part (indices R..R+C) of the state.
+      Initialize squeeze_pos=absorb_pos=0
+
+   *  ABSORB(State, Input[])
+
+   If Input is empty, set squeeze_pos=R
+
+   If absorb_pos==R, let State=P(state); set absorb_pos=0 and run
+   ABSORB(State, Input[]).
+
+   Else, State[absorb_pos]=Input[0]; absorb_pos+=1, recursively run
+   ABSORB(State, Input[1..]).
+
+   *  SQUEEZE(State, Output[])
+
+   If squeeze_pos==R, let State=P(State); set absorb_pos=0 and run
+   SQUEEZE(State, Output[]).
+
+   Else, Output[0]=State[squeeze_pos]; squeeze_pos+=1, recursively run
+   SQUEEZE(State, Output[1..])
+
+   *  RATCHET(State)
+
+      Permute the state: State = P(State); zero the rate part of the
+      state State[..R] = 0, set the counters squeeze_pos=absorb_pos=0.
+
+   *  FINISH(State)
+
+      Safely delete State
+
+6.  Pover state
+
+   The API for generating non-interactive zero-knowledge proofs using
+   the Fiat-Shamir transform as bytes.
+
+   The prover state consists of a public sponge denoted StatePub
+   (generating the public randomness) and a duplex hash (generating the
+   private instance) denoted StatePriv.
+
+   *  START(IO) -> State
+
+      Store the IO Pattern as a queue.
+
+      Hash the IO pattern IO into 32 bytes (ABSORB and SQUEEZE); use the
+      result to initialize a duplex hash StatePub.
+
+   Start a new duplex hash _for bytes_, absorbing IO as input StatePriv.
+
+   Initialize a byte vector Transcript.
+
+   Return State = (StatePub, StatePriv, Transcript)
+
+   *  ABSORB(State, Input[])
+
+   Run ABSORB_PUB(State, Input[])
+
+   Append ByteInput into Transcript.
+
+   *  SQUEEZE(State, Output[])
+
+      Pop (or decrease) the head of the queue, throwing an error if
+      Operation is not S or Length<0.
+
+      Squeeze Output[] elements from StatePub.
+
+   *  RATCHET(State)
+
+      Pop the head of the queue, throwing an error if Operation is not
+      R.
+
+      Run RATCHET(StatePub); RATCHET(StatePriv)
+
+   *  FINISH(State)
+
+   Throw an error if the queue is not empty.
+
+      Run FINISH(StatePub); FINISH(StatePriv).
+
+      Return Transcript
+
+   *  ABSORB_PUBLIC(State, Input[]) -> ByteInput
+
+      [this procedure is useful for absorbing public information known
+      _outside_ of the protocol, like the curve parameters]
+
+      Pop (or decrease) the head of the queue, throwing an error if
+      Operation is not A or Length<0.
+
+   Serialize Input[] into bytes into a byte vector ByteInput.
+
+   Absorb Input[] into StatePub.
+
+   Return ByteInput.
+
+   *  ABSORB_PRIVATE(State, ByteInput[])
+
+   [this procedure is useful for adding entropy to the prover, e.g.
+   hashing also the witness.]
+
+   Absorb ByteInput[] into StatePriv.  Run RATCHET(State)
+
+   *  SQUEEZE_PRIVATE(State, N) -> OutputBytes[N]
+
+      Let Seed be 32 bytes from the operating system randomness.
+
+      Run RATCHET(State); ABSORB(StatePriv, Seed)
+
+      Return SQUEEZE(StatePriv, N).
+
+   _Important Note._ During the protocol, the implementation _MUST_ make
+   sure that the sequence of API calls reflect the sequence provided in
+   the IO pattern.  Calls to absorbs should be associative to provide
+   streaming functionalities, that is: ABSORB([one]); ABSORB([one])
+   should be functionally equivalent to ABSORB([one, one]).
+
+   Same goes for SQUEEZE.
+
+   Roughly speaking, since the information about the length and the data
+   type is provided in the IO pattern, during the protocol execution the
+   hash is essentially just concatenating inputs without worrying about
+   data length, separators, markers for the state, etc.
+
+   The framework can be used inside algebraic SNARKs without any online
+   cost, since the IO pattern can be pre-computed outside of the
+   circuit.  Moreover, it is compatible with algebraic hashes, so
+   protocol developers don't have to develop new forms of encoding for
+   length and markers for each different field.  Protocol composition
+   can be achieved by simply concatenating IO patterns.  Overall, the
+   above API provides better efficiency and security for real-world
+   protocols.
+
+   *Arthur: the non-interactive Verifier.* We offer the following API
+   for the verifier of a non-interactive proof using the Fiat-Shamir
+   heuristic.  For the technical audience, this is essentially
+   [SAFE]{.underline} (https://eprint.iacr.org/2023/522) with a byte
+   interface.
+
+   *  START(IO, Transcript) -> State
+
+      Store the IO Pattern as a queue.
+
+      Hash the IO pattern IO into 32 bytes ( ABSORB and SQUEEZE); use
+      the result to initialize a duplex hash State.
+
+   *  READ(State, N) -> Input[N]
+
+      Read the Transcript deserializing N elements until Input[] is
+      filled.
+
+      Absorb Input[]into the duplex hash.
+
+      Pop (or decrease) the head of the queue, throwing an error if
+      Operation is not A or Length<0.
+
+   *  SQUEEZE(State, N) -> Output[N]
+
+      Squeeze Output[] elements from the duplex hash and return them
+
+      Pop (or decrease) the head of the queue, throwing an error if
+      Operation is not S or Length<0.
+
+   *  RATCHET(State)
+
+      Invoke ratchet from the duplex hash and clear any additional
+      state.
+
+      Pop the head of the queue, throwing an error if Operation is not
+      R.
+
+   *  FINISH(State)
+
+   Throw an error if the queue is not empty or Transcript is not fully
+   read.
+
+      Delete the state.
+
+7.  Serialization and conversion of Elements
+
+   The above API only covers actions over native elements.  Oftentimes,
+   we want to send more complex structures.  Note that it's important
+   the encoding size of the elements is fixed and can be statically
+   determined.
+
+   In the case of integers mod N to be encoded as bytes, the element is
+   seen as an integer between 0 and N-1 encoded in big endian.  Elliptic
+   curve elements are encoded serializing the x coordinate with two bits
+   to encode whether y is positive, negative, or infinity.
+
+   When squeezing bits from native elements mod N, the lowest L bits are
+   guaranteed to be indistinguishable from uniformly random if
+
+   L + 1 + N.bit_length() - (alpha := N % 2 ** n).bit_length() -(2 ** N
+   - alpha).bit_length() >= 128
+
+   We require a potential function SQUEEZE_BITS to return the above
+   number of bits and discard the remaining elements of the native
+   squeezed elements.
+
+8.  Additional Material
+
+   [Reference implementation]{.underline} (https://github.com/mmaker/
+   nimue) (with examples), [Proofs of security]{.underline}
+   (https://eprint.iacr.org/2023/520).
+
+Author's Address
+
+   Michele Orrù
+   CNRS
+   Email: m@orru.net

@@ -5,8 +5,8 @@
 Network Working Group                                            M. Orrù
 Internet-Draft                                                      CNRS
 Intended status: Informational                                  S. Krenn
-Expires: 19 October 2024                                             AIT
-                                                           17 April 2024
+Expires: 20 October 2024                                             AIT
+                                                           18 April 2024
 
 
                             Sigma Protocols
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 October 2024.
+   This Internet-Draft will expire on 20 October 2024.
 
 Copyright Notice
 
@@ -169,8 +169,7 @@ Table of Contents
    This document provides guidelines for secure implementations of Sigma
    protocols and is addressed to applied cryptographers and
    cryptographic engineers that are looking to implement a generic Sigma
-   protocol or provide an ad-hoc instantiation as part of larger
-   protocols.
+   protocol as a part of larger protocols.
 
    We consider the problem of having a high-quality entropy source well-
    suited for cryptographic purposes outside the scope of this document.
@@ -313,7 +312,7 @@ Table of Contents
    and generate the commitment securely.  We define the following
    auxiliary variables that may be pre-computed during the call of
    SigmaProtocol.new(ctx, Y).  All variables will have fixed length
-   DIGEST_LEN so to avoid canonicalization attacks.
+   DIGEST_LEN so to avoid canonization attacks.
 
 2.3.1.1.  Seeding the commitment
 
@@ -365,7 +364,7 @@ Table of Contents
    Prover algorithm.
 
    SigmaProtocol.batchable_proof(w):
-   (T_vec,pstate) = SigmaProtocol.prover_commit(w)
+   (T_vec, pstate) = SigmaProtocol.prover_commit(w)
    c = SigmaProtocol.challenge(T)
    s_vec = SigmaProtocol.prover_response(pstate, c)
    return (Serialize(T_vec), Serialize(s_vec))
@@ -376,8 +375,8 @@ Table of Contents
    Verifier algorithm.
 
    SigmaProtocol.batchable_verify(proof)
-   (T,s) = Deserialize(proof)`
-   c <- SigmaProtocol.challenge(T)`
+   (T,s) = Deserialize(proof)
+   c <- SigmaProtocol.challenge(T)
    return SigmaProtocol.verifier(T, c, s)
 
    *WARNING* Input validation The case of batched verification must
@@ -393,8 +392,8 @@ Table of Contents
    Prover algorithm.
 
    SigmaProtocol.short_proof(w)
-   (T,pstate) <- SigmaProtocol.prover_commit(w)
-   c <- SigmaProtocol.challenge( T)`
+   (T, pstate) <- SigmaProtocol.prover_commit(w)
+   c <- SigmaProtocol.challenge(T)
    s_vec<- SigmaProtocol.prover_response(pstate,c)
    return (Serialize(c), Serialize(s))
 
@@ -463,16 +462,16 @@ Table of Contents
    '-secp256k1' 128 [@SECG] Ristretto '-ristretto' 128 [@cfrg-ristretto-
    decaf] BLS12-381 '-bls12-381' 128 [@bls12] :::
 
-   We denote with GG the prime-order group of the elliptic curve, with
-   $GF(p)$ the scalar field, and with G the generator of GG chosen as
-   per the curve parameters.  We assume that all above curve parameters
-   also provide the following group operations: check for equality,
-   identity, addition, and scalar multiplication.  Optionally,
-   implementation might implement Pippenger's algorithm [@pippenger] for
-   multi-scalar multiplication.  In addition, we consider:
+   We denote with GG the prime-order elliptic curve group, with GF(p)
+   the scalar field, and with G the generator of GG chosen as per the
+   curve parameters.  We assume that all above curve parameters also
+   provide the following group operations: check for equality, identity,
+   addition, and scalar multiplication.  Optionally, implementation
+   might implement Pippenger's algorithm [@pippenger] for multi-scalar
+   multiplication.  In addition, we consider:
 
    *  an identifier for the curve, chosen from the table above, and
-      denoted $\textsf{curve}$;
+      denoted curve;
 
    *  a deterministic sub-procedure a = FromBytes(b), taking as input a
       bit string b of length 32 bytes, and mapping it into an element a
@@ -494,15 +493,15 @@ Table of Contents
    We describe an abstract class for proving knowledge of a preimage
    under an arbitrary _group homomorphism_, which is a mapping between
    two groups respecting the structure of the groups.  In particular, as
-   will be discussed in 3.4 (Section 3.4), many statements related to
+   will be discussed in #sec:instantiations, many statements related to
    discrete logarithms or representations in groups of prime order, can
    be expressed as statements over group homomorphisms.  For an in-depth
    discussion of the underlying theory we refer to Cramer [@cramer97].
 
-   *Definition 1*. _For two groups $GG_1,GG_2$, a function
-   $\varphi:GG_1\toGG_2:x\mapsto\varphi(x)$ is a *(group) homomorphism_,
+   *Definition 1*. For two groups $GG_1,GG_2$, a function
+   $\varphi:GG_1\toGG_2:x\mapsto\varphi(x)$ is a _(group) homomorphism_,
    if and only if for all $a,b in GG_1$ it holds that
-   $\varphi(a+b)=\varphi(a)+\varphi(b)$.* :::
+   $\varphi(a+b)=\varphi(a)+\varphi(b)$. :::
 
    Readers not familiar with the notation of group homomorphism may
    think of $\varphi$ as a linear function from n elements into m
@@ -510,7 +509,7 @@ Table of Contents
 
    ::: example Discrete logarithm equality phi_DLEQ Looking at the
    relation R_DLEQ, the relevant homomorphism is given by: f_DLEQ :
-   GF(p)\toGG^2 : w\mapsto (wG,wH) If equality of discrete logarithms
+   GF(p)\to GG^2 : w\mapsto (wG,wH) If equality of discrete logarithms
    within _different_ groups of the same prime order p is to be proven,
    the homomorphism to be considered would be: f_DLEQ' :
    GF(p)\toGG_1\timesGG_2 : w\mapsto (wG,wH) where G and H would now be
@@ -525,7 +524,7 @@ Table of Contents
    We provide a generic template for all Sigma protocols for statements
    of the following form over DLOG groups:
 
-   R_dl ={ ((Y_1, ... ,Y_m),(w_1, ... ,w_n)) in GG^m * GF(p)^n: (Y_1,
+   R_dl = { ((Y_1, ... ,Y_m),(w_1, ... ,w_n)) in GG^m * GF(p)^n: (Y_1,
    ... ,Y_m)=\varphi(w_1, ... ,w_n) }
 
    where $\varphi:GF(p)^n\toGG^m$ is a group homomorphism.
@@ -557,8 +556,8 @@ Table of Contents
       DlogTemplate.prover_commit(w_vec) consists of the following steps:
 
       sample random elements r_1, ... ,r_n <- GF(p) T_vec=(T_1, ...
-      ,T_m)=\varphi(r_1, ... ,r_n)$ pstate=(r_1, ... ,r_n)$ return
-      $(T_vec,pstate`)$
+      ,T_m)=\varphi(r_1, ... ,r_n) pstate = (r_1, ... ,r_n) return
+      (T_vec, pstate)
 
    *  []{#item:basic:p2 label="item:basic:p2"}
 
@@ -571,18 +570,10 @@ Table of Contents
    *  []{#item:basic:v label="item:basic:v"}
       DlogTemplate.verifier(T_vec,c,s_vec) proceeds as follows:
 
-      1.  (s_1, ... , s_n) =s_vec
-
-      2.  (T_1, ... , T_m) = T_vec
-
-      3.  e = FromBytes(c).
-
-      4.  For i=1, ... ,n: check $s_i in GF(p)$
-
-      5.  For $j=1, ... ,m$: check $T_j in GG$
-
-      6.  Return True if $(T_1 + eY_1, ... ,T_m + eY_m) = \varphi(s_1,
-          ... ,s_n)$; False otherwise
+      (s_1, ... , s_n) =s_vec (T_1, ... , T_m) = T_vec e = FromBytes(c)
+      for i=1, ... ,n: check $s_i in GF(p) for $j=1, ... ,m$: check $T_j
+      in GG return ((T_1 + eY_1, ... ,T_m + eY_m) = \varphi(s_1, ...
+      ,s_n))
 
    *  s_vec = DlogTemplate.simulate_response():
 
@@ -650,9 +641,9 @@ Table of Contents
 
    *  $\varphi:GF(p)\toGG:w\mapsto wG$
 
-   *  Schnorr.morphism_label(): return: $$\hash(\texttt{\textquotesingle
-      {}schnorrsig\textquotesingle},~\textsf{curve}\mathbf{\mid}~Seriali
-      ze(G) ,~Serialize(Y))$
+   *  Schnorr.morphism_label(): return:
+      $$\hash(\texttt{\textquotesingle{}schnorrsig\textquotesingle},
+      curve \mathbf{\mid}~Serialize(G) ,~Serialize(Y))$
 
    For a description of this proof goal in the general case of residue
    classes, we also refer to [@zkproof-reference 1.4.1].
@@ -665,7 +656,7 @@ Table of Contents
    *  $\varphi:GF(p)\toGG^2:w\mapsto (wG,wH)$
 
    *  Dleq.morphism_label(): return $$\hash(\texttt{\textquotesingle{}dl
-      eq\textquotesingle},~\textsf{curve}\mathbf{\mid}~Serialize(G)
+      eq\textquotesingle},~{curve}\mathbf{\mid}~Serialize(G)
       ,~Serialize(H) ,~Serialize(Y_1) ,~Serialize(Y_2))$
 
 3.4.3.  Diffie-Hellman
@@ -684,7 +675,7 @@ Table of Contents
 
    *  Dh.morphism_label() return:
       $$\hash(\texttt{\textquotesingle{}diffie-
-      hellman\textquotesingle},~\textsf{curve}\mathbf{\mid}~Serialize(G)
+      hellman\textquotesingle},~{curve}\mathbf{\mid}~Serialize(G)
       ,~Serialize(Y_1) ,~Serialize(Y_2))$
 
    As shown in this example, and in contrast to linear relations,
@@ -701,8 +692,8 @@ Table of Contents
    *  $\varphi:GF(p)^m\toGG:(w_1,w_2, ... , w_m)\mapsto \sum_i w_iG_i$
 
    *  Rep.morphism_label() returns $$\hash(\texttt{\textquotesingle{}rep
-      resentation\textquotesingle},~\textsf{curve}\mathbf{\mid}~Serializ
-      e(G_1) ,~\cdots ,~Serialize(G_m) ,~Serialize(Y))$
+      resentation\textquotesingle},~{curve}\mathbf{\mid}~Serialize(G_1)
+      ,~\cdots ,~Serialize(G_m) ,~Serialize(Y))$
 
    ::: example Range proofs via bit decomposition Let GG be a cyclic
    group of prime order p, and let G and H be generators of GG, and let

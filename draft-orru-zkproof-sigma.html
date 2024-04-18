@@ -10,12 +10,12 @@
 <meta content="
        This document describes Sigma protocols, a secure, general-purpose non-interactive zero-knowledge proof of knowledge. Concretely, the scheme allows proving knowledge of a witness, without revealing any information about the undisclosed messages or the signature itself, while at the same time, guarantying soundness of the overall protocols. 
     " name="description">
-<meta content="xml2rfc 3.20.1" name="generator">
+<meta content="xml2rfc 3.21.0" name="generator">
 <meta content="zero-knowledge" name="keyword">
 <meta content="draft-orru-zkproof-sigma-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.20.1
-    Python 3.11.8
+  xml2rfc 3.21.0
+    Python 3.11.9
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
@@ -1030,7 +1030,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Orrù &amp; Krenn</td>
-<td class="center">Expires 19 October 2024</td>
+<td class="center">Expires 20 October 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1043,12 +1043,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-orru-zkproof-sigma-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-04-17" class="published">17 April 2024</time>
+<time datetime="2024-04-18" class="published">18 April 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-10-19">19 October 2024</time></dd>
+<dd class="expires"><time datetime="2024-10-20">20 October 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1097,7 +1097,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 19 October 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 October 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1328,7 +1328,7 @@ algebraic objects.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
         <h3 id="name-scope-of-this-document">
 <a href="#section-1.4" class="section-number selfRef">1.4. </a><a href="#name-scope-of-this-document" class="section-name selfRef">Scope of this document</a>
         </h3>
-<p id="section-1.4-1">This document provides guidelines for secure implementations of Sigma protocols and is addressed to applied cryptographers and cryptographic engineers that are looking to implement a generic Sigma protocol or provide an ad-hoc instantiation as part of larger protocols.<a href="#section-1.4-1" class="pilcrow">¶</a></p>
+<p id="section-1.4-1">This document provides guidelines for secure implementations of Sigma protocols and is addressed to applied cryptographers and cryptographic engineers that are looking to implement a generic Sigma protocol as a part of larger protocols.<a href="#section-1.4-1" class="pilcrow">¶</a></p>
 <p id="section-1.4-2">We consider the problem of having a high-quality entropy source well-suited for cryptographic purposes outside the scope of this document. We will not talk about implementation of cryptographic primitives such as hash functions, or elliptic-curve algebra, but we will provide references for where to find them. Furthermore, we won't provide any guidance for securely storing secrets or producing constant-time code.<a href="#section-1.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1414,7 +1414,7 @@ If the label is <em>not</em> tied to the relation, then it may be possible to pr
           <h4 id="name-computing-the-challenge-and">
 <a href="#section-2.3.1" class="section-number selfRef">2.3.1. </a><a href="#name-computing-the-challenge-and" class="section-name selfRef">Computing the challenge and seeding the commitment</a>
           </h4>
-<p id="section-2.3.1-1">Relying on a hash function allows us to both compute the challenge and generate the commitment securely. We define the following auxiliary variables that may be pre-computed during the call of <code>SigmaProtocol.new(ctx, Y)</code>. All variables will have fixed length <code>DIGEST_LEN</code> so to avoid canonicalization attacks.<a href="#section-2.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.3.1-1">Relying on a hash function allows us to both compute the challenge and generate the commitment securely. We define the following auxiliary variables that may be pre-computed during the call of <code>SigmaProtocol.new(ctx, Y)</code>. All variables will have fixed length <code>DIGEST_LEN</code> so to avoid canonization attacks.<a href="#section-2.3.1-1" class="pilcrow">¶</a></p>
 <div id="seeding-the-commitment">
 <section id="section-2.3.1.1">
             <h5 id="name-seeding-the-commitment">
@@ -1457,7 +1457,7 @@ Witness validation In the following we assume correctness of the witness <code>w
 <div class="alignLeft art-text artwork" id="section-2.3.3-2">
 <pre>
 SigmaProtocol.batchable_proof(w):
-(T_vec,pstate) = SigmaProtocol.prover_commit(w)
+(T_vec, pstate) = SigmaProtocol.prover_commit(w)
 c = SigmaProtocol.challenge(T)
 s_vec = SigmaProtocol.prover_response(pstate, c)
 return (Serialize(T_vec), Serialize(s_vec))
@@ -1468,8 +1468,8 @@ return (Serialize(T_vec), Serialize(s_vec))
 <div class="alignLeft art-text artwork" id="section-2.3.3-5">
 <pre>
 SigmaProtocol.batchable_verify(proof)
-(T,s) = Deserialize(proof)`
-c &lt;- SigmaProtocol.challenge(T)`
+(T,s) = Deserialize(proof)
+c &lt;- SigmaProtocol.challenge(T)
 return SigmaProtocol.verifier(T, c, s)
 </pre><a href="#section-2.3.3-5" class="pilcrow">¶</a>
 </div>
@@ -1486,8 +1486,8 @@ Input validation The case of batched verification must include an input validati
 <div class="alignLeft art-text artwork" id="section-2.3.4-2">
 <pre>
 SigmaProtocol.short_proof(w)
-(T,pstate) &lt;- SigmaProtocol.prover_commit(w)
-c &lt;- SigmaProtocol.challenge( T)`
+(T, pstate) &lt;- SigmaProtocol.prover_commit(w)
+c &lt;- SigmaProtocol.challenge(T)
 s_vec&lt;- SigmaProtocol.prover_response(pstate,c)
 return (Serialize(c), Serialize(s))
 </pre><a href="#section-2.3.4-2" class="pilcrow">¶</a>
@@ -1573,8 +1573,8 @@ to the concrete security study of the larger protocol.</span>.<a href="#section-
   Ristretto   <code>'-ristretto'</code>         128         [@cfrg-ristretto-decaf]
   BLS12-381   <code>'-bls12-381'</code>         128                [@bls12]
 :::<a href="#section-3.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.1-3">We denote with <code>GG</code> the prime-order group of the elliptic curve, with
-$GF(p)$ the scalar field, and with <code>G</code> the generator of <code>GG</code> chosen as
+<p id="section-3.1-3">We denote with <code>GG</code> the prime-order elliptic curve group, with
+<code>GF(p)</code> the scalar field, and with <code>G</code> the generator of <code>GG</code> chosen as
 per the curve parameters. We assume that all above curve parameters also
 provide the following group operations: check for equality, identity,
 addition, and scalar multiplication. Optionally, implementation might
@@ -1583,7 +1583,7 @@ multiplication. In addition, we consider:<a href="#section-3.1-3" class="pilcrow
 <ul class="normal">
 <li class="normal" id="section-3.1-4.1">
             <p id="section-3.1-4.1.1">an identifier for the curve, chosen from the table above, and
-  denoted $\textsf{curve}$;<a href="#section-3.1-4.1.1" class="pilcrow">¶</a></p>
+  denoted <code>curve</code>;<a href="#section-3.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.1-4.2">
             <p id="section-3.1-4.2.1">a deterministic sub-procedure <code>a = FromBytes(b)</code>,
@@ -1616,21 +1616,21 @@ multiplication. In addition, we consider:<a href="#section-3.1-3" class="pilcrow
 <p id="section-3.2-1">We describe an abstract class for proving knowledge of a preimage under
 an arbitrary <em>group homomorphism</em>, which is a mapping between two groups
 respecting the structure of the groups. In particular, as will be
-discussed in <span><a href="#sec_instantiations" class="internal xref">3.4</a> (<a href="#sec_instantiations" class="auto internal xref">Section 3.4</a>)</span>, many statements related to discrete
+discussed in #sec:instantiations, many statements related to discrete
 logarithms or representations in groups of prime order, can be expressed
 as statements over group homomorphisms. For an in-depth discussion of
 the underlying theory we refer to Cramer [@cramer97].<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2"><strong>Definition 1</strong>. <em>For two groups $GG_1,GG_2$, a function
-$\varphi:GG_1\toGG_2:x\mapsto\varphi(x)$ is a *(group) homomorphism</em>,
+<p id="section-3.2-2"><strong>Definition 1</strong>. For two groups $GG_1,GG_2$, a function
+$\varphi:GG_1\toGG_2:x\mapsto\varphi(x)$ is a <em>(group) homomorphism</em>,
 if and only if for all $a,b in GG_1$ it holds that
-$\varphi(a+b)=\varphi(a)+\varphi(b)$.*
+$\varphi(a+b)=\varphi(a)+\varphi(b)$.
 :::<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <p id="section-3.2-3">Readers not familiar with the notation of group homomorphism may think
 of $\varphi$ as a linear function from <code>n</code> elements into <code>m</code> elements.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 <p id="section-3.2-4">::: example
 Discrete logarithm equality <code>phi_DLEQ</code> Looking at the relation
 R_DLEQ, the relevant homomorphism is given by:
-<code>f_DLEQ : GF(p)\toGG^2 : w\mapsto (wG,wH)</code>
+<code>f_DLEQ : GF(p)\to GG^2 : w\mapsto (wG,wH)</code>
 If equality of discrete logarithms within <em>different</em> groups of the same
 prime order <code>p</code> is to be proven, the homomorphism to be considered would
 be:
@@ -1647,7 +1647,7 @@ ${R_rep}$, the relevant homomorphism is given by:
 <p id="section-3.2-6">We provide a generic template
 for all Sigma protocols for statements of the following form over
 DLOG groups:<a href="#section-3.2-6" class="pilcrow">¶</a></p>
-<p id="section-3.2-7">R_dl ={
+<p id="section-3.2-7">R_dl = {
     ((Y_1, ... ,Y_m),(w_1, ... ,w_n)) in GG^m * GF(p)^n: (Y_1, ... ,Y_m)=\varphi(w_1, ... ,w_n)
   }<a href="#section-3.2-7" class="pilcrow">¶</a></p>
 <p id="section-3.2-8">where $\varphi:GF(p)^n\toGG^m$ is a group homomorphism.<a href="#section-3.2-8" class="pilcrow">¶</a></p>
@@ -1681,9 +1681,9 @@ protocols.<a href="#section-3.2-12" class="pilcrow">¶</a></p>
   consists of the following steps:<a href="#section-3.2-13.2.1" class="pilcrow">¶</a></p>
 <p id="section-3.2-13.2.2">
 sample random elements r_1, ... ,r_n &lt;- GF(p)
-  T_vec=(T_1, ... ,T_m)=\varphi(r_1, ... ,r_n)$
-  pstate<code>=(r_1, ... ,r_n)$
-  return $(T_vec,</code>pstate`)$<a href="#section-3.2-13.2.2" class="pilcrow">¶</a></p>
+  T_vec=(T_1, ... ,T_m)=\varphi(r_1, ... ,r_n)
+  pstate = (r_1, ... ,r_n)
+  return (T_vec, pstate)<a href="#section-3.2-13.2.2" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.2-13.3">
             <p id="section-3.2-13.3.1">[]{#item:basic:p2 label="item:basic:p2"}<a href="#section-3.2-13.3.1" class="pilcrow">¶</a></p>
@@ -1703,29 +1703,13 @@ s_vec &lt;- DlogTemplate.prover_response(pstate,c):
             <p id="section-3.2-13.5.1">[]{#item:basic:v label="item:basic:v"}
   <code>DlogTemplate.verifier(T_vec,c,s_vec)</code>
   proceeds as follows:<a href="#section-3.2-13.5.1" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.2-13.5.2">
-<li id="section-3.2-13.5.2.1">
-                <p id="section-3.2-13.5.2.1.1"><code>(s_1, ... , s_n) =s_vec</code><a href="#section-3.2-13.5.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li id="section-3.2-13.5.2.2">
-                <p id="section-3.2-13.5.2.2.1"><code>(T_1, ... , T_m) = T_vec</code><a href="#section-3.2-13.5.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li id="section-3.2-13.5.2.3">
-                <p id="section-3.2-13.5.2.3.1"><code>e = FromBytes(c)</code>.<a href="#section-3.2-13.5.2.3.1" class="pilcrow">¶</a></p>
-</li>
-              <li id="section-3.2-13.5.2.4">
-                <p id="section-3.2-13.5.2.4.1">For
- <code>i=1, ... ,n</code>: check $s_i in GF(p)$<a href="#section-3.2-13.5.2.4.1" class="pilcrow">¶</a></p>
-</li>
-              <li id="section-3.2-13.5.2.5">
-                <p id="section-3.2-13.5.2.5.1">For $j=1, ... ,m$: check $T_j in GG$<a href="#section-3.2-13.5.2.5.1" class="pilcrow">¶</a></p>
-</li>
-              <li id="section-3.2-13.5.2.6">
-                <p id="section-3.2-13.5.2.6.1">Return <code>True</code> if
- $(T_1 + eY_1, ... ,T_m + eY_m) = \varphi(s_1, ... ,s_n)$;
- <code>False</code> otherwise<a href="#section-3.2-13.5.2.6.1" class="pilcrow">¶</a></p>
-</li>
-            </ol>
+<p id="section-3.2-13.5.2">
+(s_1, ... , s_n) =s_vec
+  (T_1, ... , T_m) = T_vec
+  e = FromBytes(c)
+  for <code>i=1, ... ,n</code>: check $s_i in GF(p)
+  for $j=1, ... ,m$: check $T_j in GG
+  return ((T_1 + eY_1, ... ,T_m + eY_m) = \varphi(s_1, ... ,s_n))<a href="#section-3.2-13.5.2" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.2-13.6">
             <p id="section-3.2-13.6.1"><code>s_vec = DlogTemplate.simulate_response()</code>:<a href="#section-3.2-13.6.1" class="pilcrow">¶</a></p>
@@ -1747,7 +1731,7 @@ s_vec &lt;- DlogTemplate.prover_response(pstate,c):
 </li>
               <li id="section-3.2-13.7.2.2">
                 <p id="section-3.2-13.7.2.2.1">[]{#item:basic:sim:s label="item:basic:sim:s"}
- $(s_1, ... ,s_n) =s_vec$.<a href="#section-3.2-13.7.2.2.1" class="pilcrow">¶</a></p>
+$(s_1, ... ,s_n) =s_vec$.<a href="#section-3.2-13.7.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-3.2-13.7.2.3">
                 <p id="section-3.2-13.7.2.3.1"><code>e =FromBytes(c)</code>.<a href="#section-3.2-13.7.2.3.1" class="pilcrow">¶</a></p>
@@ -1810,7 +1794,7 @@ base <code>G</code>.<a href="#section-3.4.1-1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-3.4.1-2.2">
               <p id="section-3.4.1-2.2.1"><code>Schnorr.morphism_label()</code>: return:
-  $$\hash(\texttt{\textquotesingle{}schnorrsig\textquotesingle},~\textsf{curve}\mathbf{\mid}~<code>Serialize(G) ,~</code>Serialize<code>(Y))</code>$<a href="#section-3.4.1-2.2.1" class="pilcrow">¶</a></p>
+  $$\hash(\texttt{\textquotesingle{}schnorrsig\textquotesingle}, curve \mathbf{\mid}~<code>Serialize(G) ,~</code>Serialize<code>(Y))</code>$<a href="#section-3.4.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.4.1-3">For a description of this proof goal in the general case of residue
@@ -1830,7 +1814,7 @@ $Y_1 = wG$ and $Y_2 = wH$.<a href="#section-3.4.2-1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-3.4.2-2.2">
               <p id="section-3.4.2-2.2.1"><code>Dleq.morphism_label()</code>: return
-  $$\hash(\texttt{\textquotesingle{}dleq\textquotesingle},~\textsf{curve}\mathbf{\mid}~<code>Serialize(G) ,~</code>Serialize<code>(H) ,~</code>Serialize<code>(Y_1) ,~</code>Serialize<code>(Y_2))</code>$<a href="#section-3.4.2-2.2.1" class="pilcrow">¶</a></p>
+  $$\hash(\texttt{\textquotesingle{}dleq\textquotesingle},~{curve}\mathbf{\mid}~<code>Serialize(G) ,~</code>Serialize<code>(H) ,~</code>Serialize<code>(Y_1) ,~</code>Serialize<code>(Y_2))</code>$<a href="#section-3.4.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -1855,7 +1839,7 @@ $Y_1=w_1G$, $Y_2=w_2G$, and $Y_3=w_2Y_1$, leading the homomorphism<a href="#sect
 </li>
             <li class="normal" id="section-3.4.3-2.2">
               <p id="section-3.4.3-2.2.1"><code>Dh.morphism_label()</code> return:
-  $$\hash(\texttt{\textquotesingle{}diffie-hellman\textquotesingle},~\textsf{curve}\mathbf{\mid}~<code>Serialize(G) ,~</code>Serialize<code>(Y_1) ,~</code>Serialize<code>(Y_2))</code>$<a href="#section-3.4.3-2.2.1" class="pilcrow">¶</a></p>
+  $$\hash(\texttt{\textquotesingle{}diffie-hellman\textquotesingle},~{curve}\mathbf{\mid}~<code>Serialize(G) ,~</code>Serialize<code>(Y_1) ,~</code>Serialize<code>(Y_2))</code>$<a href="#section-3.4.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.4.3-3">As shown in this example, and in contrast to linear relations,
@@ -1879,7 +1863,7 @@ opening of a Pedersen commitment means proving knowledge of
 </li>
             <li class="normal" id="section-3.4.4-2.2">
               <p id="section-3.4.4-2.2.1"><code>Rep.morphism_label()</code> returns
-  $$\hash(\texttt{\textquotesingle{}representation\textquotesingle},~\textsf{curve}\mathbf{\mid}~<code>Serialize(G_1) ,~\cdots ,~</code>Serialize<code>(G_m) ,~</code>Serialize<code>(Y))</code>$<a href="#section-3.4.4-2.2.1" class="pilcrow">¶</a></p>
+  $$\hash(\texttt{\textquotesingle{}representation\textquotesingle},~{curve}\mathbf{\mid}~<code>Serialize(G_1) ,~\cdots ,~</code>Serialize<code>(G_m) ,~</code>Serialize<code>(Y))</code>$<a href="#section-3.4.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.4.4-3">::: example
