@@ -67,9 +67,9 @@ Table of Contents
      2.1.  Hash Registry
    3.  IO Pattern
    4.  Duplex Hash
-   5.  Pover state
-   6.  Serialization and conversion of Elements
-   7.  Additional Material
+     4.1.  Generating challenges
+   5.  Serialization and conversion of Elements
+   6.  Additional Material
    Author's Address
 
 1.  Introduction
@@ -203,10 +203,13 @@ Table of Contents
    for i = R .. R+C: State[i] = IV[i]
    squeeze_pos=absorb_pos=0
 
-   - Absorb(State, Input[]) If Input is empty, set squeeze_pos=R If
-   absorb_pos==R, let State=P(state); set absorb_pos=0 and run
-   Absorb(State, Input[]).  Else, State[absorb_pos]=Input[0];
-   absorb_pos+=1, recursively run Absorb(State, Input[1..]).
+   -
+
+Absorb(State, Input[])
+If Input is empty, set squeeze_pos=R
+If absorb_pos==R, let State=P(state); set absorb_pos=0 and run Absorb(State, Input[]).
+Else, State[absorb_pos]=Input[0]; absorb_pos+=1, recursively run
+Absorb(State, Input[1..]).
 
    -
 
@@ -225,95 +228,12 @@ Else, Output[0]=State[squeeze_pos]; squeeze_pos+=1, recursively run Squeeze(Stat
    FINISH(State)
    Safely delete State
 
-5.  Pover state
+4.1.  Generating challenges
 
-   The API for generating non-interactive zero-knowledge proofs using
-   the Fiat-Shamir transform as bytes.
-
-   The prover state consists of a public sponge denoted StatePub
-   (generating the public randomness) and a duplex hash (generating the
-   private instance) denoted StatePriv.
-
-  START(IO) -> State
-  Store the IO Pattern as a queue.
-  Hash the IO pattern IO into 32 bytes (`Absorb` and `Squeeze`); use the
-  result to initialize a duplex hash StatePub.
-
-  Start a new duplex hash *for bytes*, absorbing IO as input StatePriv.
-  Initialize a byte vector Transcript.
-  Return State = (StatePub, StatePriv, Transcript)
-
-   -
-
-   Absorb(State, Input[])
-
-   Run `Absorb`_PUB(State, Input[])
-   Append ByteInput into Transcript.
-
-   -
-
-Squeeze(State, Output[])
-
-Pop (or decrease) the head of the queue, throwing an error if Operation is not `S` or Length\<0. Squeeze Output[] elements from StatePub.
-
-   -
-
-   RATCHET(State)
-
-   Pop the head of the queue, throwing an error if Operation is not R.
-   Run RATCHET(StatePub); RATCHET(StatePriv)
-
-   -
-
-   FINISH(State)
-   Throw an error if the queue is not empty.
-   Run FINISH(StatePub); FINISH(StatePriv).
-   Return Transcript
-
-   *  this procedure is useful for absorbing public information known
-      _outside_ of the protocol, like the curve parameters
-
-      Absorb_PUBLIC(State, Input[]) -> ByteInput Pop (or decrease) the
-      head of the queue, throwing an error if Operation is not A or
-      Length<0.  Serialize Input[] into bytes into a byte vector
-      ByteInput.  Absorb Input[] into StatePub.  Return ByteInput.
-
-   *  this procedure is useful for adding entropy to the prover, e.g.
-      hashing also the witness.
-
-      Absorb_PRIVATE(State, ByteInput[]) Absorb ByteInput[] into
-      StatePriv.  Run RATCHET(State)
-
-   - Squeeze_PRIVATE(State, N) -> OutputBytes[N] Let Seed be 32 bytes
-   from the operating system randomness.  Run RATCHET(State);
-   Absorb(StatePriv, Seed) Return Squeeze(StatePriv, N).
-
-   _Important Note._ During the protocol, the implementation _MUST_ make
-   sure that the sequence of API calls reflect the sequence provided in
-   the IO pattern.  Calls to absorb should be associative to provide
-   streaming functionalities, that is: Absorb([a]); Absorb([b]) should
-   be equivalent to Absorb([a, b]).
-
-   Same goes for Squeeze.
-
-   Roughly speaking, since the information about the length and the data
-   type is provided in the IO pattern, during the protocol execution the
-   hash is essentially just concatenating inputs without worrying about
-   data length, separators, markers for the state, etc.
-
-   The framework can be used inside algebraic SNARKs without any online
-   cost, since the IO pattern can be pre-computed outside of the
-   circuit.  Moreover, it is compatible with algebraic hashes, so
-   protocol developers don't have to develop new forms of encoding for
-   length and markers for each different field.  Protocol composition
-   can be achieved by simply concatenating IO patterns.  Overall, the
-   above API provides better efficiency and security for real-world
-   protocols.
-
-   *Arthur: the non-interactive Verifier.* We offer the following API
-   for the verifier of a non-interactive proof using the Fiat-Shamir
-   heuristic.  For the technical audience, this is essentially SAFE
-   (https://eprint.iacr.org/2023/522) with a byte interface.
+   We offer the following API for the verifier of a non-interactive
+   proof using the Fiat-Shamir heuristic.  For the technical audience,
+   this is essentially SAFE (https://eprint.iacr.org/2023/522) with a
+   byte interface.
 
    -
 
@@ -349,7 +269,7 @@ FINISH(State)
 Throw an error if the queue is not empty or Transcript is not fully read.
 Delete the state.
 
-6.  Serialization and conversion of Elements
+5.  Serialization and conversion of Elements
 
    The above API only covers actions over native elements.  Oftentimes,
    we want to send more complex structures.  Note that it's important
@@ -370,11 +290,10 @@ L + 1 + N.bit_length() - (alpha := N % 2 ** n).bit_length() -(2 ** N - alpha).bi
    number of bits and discard the remaining elements of the native
    squeezed elements.
 
-7.  Additional Material
+6.  Additional Material
 
-   [Reference implementation]{.underline} (https://github.com/mmaker/
-   nimue) (with examples), [Proofs of security]{.underline}
-   (https://eprint.iacr.org/2023/520).
+   Reference implementation (https://github.com/mmaker/nimue) (with
+   examples), Proofs of security (https://eprint.iacr.org/2023/520).
 
 Author's Address
 
