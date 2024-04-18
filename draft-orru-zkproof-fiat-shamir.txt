@@ -149,7 +149,7 @@ Table of Contents
    a simple, non-ambiguous, human-readable format.  A typical example is
    the following:
 
-    domain-separator A32generator A32public-key R A32commitment S32challenge A32response
+domain-separator A32generator A32public-key R A32commitment S32challenge A32response
 
    The domain-separator is a user-specified string uniquely identifying
    the end-user application (to avoid cross-protocol attacks).
