@@ -575,7 +575,7 @@ Table of Contents
    (r_1, ... , r_n)= pstate
    (w_1, ... , w_n)= w_vec
    e = FromBytes(c)
-   for i = 1, ... , n`: `s_i = r_i+e w_i
+   for i = 1, ... , n: s_i = r_i + e * w_i
    return s_vec = (s_1, ... , s_n)
 
    *  DlogTemplate.label() return morphism_label().
@@ -587,8 +587,8 @@ Table of Contents
    (s_1, ... , s_n) = s_vec
    (T_1, ... , T_m) = T_vec
    e = FromBytes(c)
-   for `i =1, ... , n`: check $s_i in GF(p)
-   for `j =1, ... , m`: check $T_j in GG
+   for i =1, ... , n: check s_i in GF(p)
+   for j =1, ... , m: check T_j in GG
    return ((T_1 + eY_1, ... , T_m + eY_m) = \varphi(s_1, ... , s_n))
 
    -
