@@ -1342,7 +1342,7 @@ algebraic objects.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
       <h2 id="name-sigma-protocols-definition">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-sigma-protocols-definition" class="section-name selfRef">Sigma protocols definition</a>
       </h2>
-<p id="section-2-1">In the following, we describe a generic interface for Sigma protocols. Such protocols can be used to prove that, for some binary relation <code>R</code> and a public value <code>Y</code>, a witness <code>w</code> such that <code>(Y,w)</code> is in <code>R</code> is known. Basic statements include proofs of knowledge of a secret key, openings of commitments, and more in general of representations. The type of these elements depends on the specific relation being implemented.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">In the following, we describe a generic interface for Sigma protocols. Such protocols can be used to prove that, for some binary relation <code>R</code> and a public value <code>Y</code>, a witness <code>w</code> such that <code>(Y, w)</code> is in <code>R</code> is known. Basic statements include proofs of knowledge of a secret key, openings of commitments, and more in general of representations. The type of these elements depends on the specific relation being implemented.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">An important property of Sigma protocols is that they are composable: it is possible to prove conjunction and disjunctions of statements in zero-knowledge. Composition of Sigma protocols is dealt separately; for an in-depth discussion of the underlying theory we refer to Cramer [@cramer97].<a href="#section-2-2" class="pilcrow">¶</a></p>
 <div id="overview">
 <section id="section-2.1">
@@ -1473,7 +1473,7 @@ return (Serialize(T_vec), Serialize(s_vec))
 <pre>
 SigmaProtocol.batchable_verify(proof)
 
-(T,s) = Deserialize(proof)
+(T, s) = Deserialize(proof)
 c &lt;- SigmaProtocol.challenge(T)
 return SigmaProtocol.verifier(T, c, s)
 </pre><a href="#section-2.3.3-5" class="pilcrow">¶</a>
@@ -1494,7 +1494,7 @@ SigmaProtocol.short_proof(w)
 
 (T, pstate) &lt;- SigmaProtocol.prover_commit(w)
 c &lt;- SigmaProtocol.challenge(T)
-s_vec &lt;- SigmaProtocol.prover_response(pstate,c)
+s_vec &lt;- SigmaProtocol.prover_response(pstate, c)
 return (Serialize(c), Serialize(s))
 </pre><a href="#section-2.3.4-2" class="pilcrow">¶</a>
 </div>
@@ -1600,7 +1600,7 @@ multiplication. In addition, we consider:<a href="#section-3.1-3" class="pilcrow
 </li>
           <li class="normal" id="section-3.1-4.3">
             <p id="section-3.1-4.3.1">a deterministic sub-procedure <code>s = Serialize(P)</code>,
-  taking as input a group element $P in GG$ and returning a
+  taking as input a group element <code>P in GG</code> and returning a
   fixed-length sequence of bits. For elliptic curve groups,
   <code>Serialize</code> must provide a compressed representation of the
   <em>affine</em> representation, such as the <code>x</code>-coordinate of <code>P</code> and one
@@ -1627,122 +1627,127 @@ discussed in #sec:instantiations, many statements related to discrete
 logarithms or representations in groups of prime order, can be expressed
 as statements over group homomorphisms. For an in-depth discussion of
 the underlying theory we refer to Cramer [@cramer97].<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2"><strong>Definition 1</strong>. For two groups $GG_1,GG_2$, a function
-$\varphi:GG_1 -&gt; GG_2:x\mapsto\varphi(x)$ is a <em>(group) homomorphism</em>,
-if and only if for all $a,b in GG_1$ it holds that
-$\varphi(a+b)=\varphi(a)+\varphi(b)$.
+<p id="section-3.2-2"><strong>Definition 1</strong>. For two groups <code>GG_1, GG_2</code>, a function
+<code>\varphi:GG_1 -&gt; GG_2:x\mapsto\varphi(x)</code> is a <em>(group) homomorphism</em>,
+if and only if for all <code>a, b in GG_1</code> it holds that
+<code>\varphi(a+b)=\varphi(a)+\varphi(b)</code>.
 :::<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <p id="section-3.2-3">Readers not familiar with the notation of group homomorphism may think
-of $\varphi$ as a linear function from <code>n</code> elements into <code>m</code> elements.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+of <code>\varphi</code> as a linear function from <code>n</code> elements into <code>m</code> elements.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 <p id="section-3.2-4">::: example
 Discrete logarithm equality <code>phi_DLEQ</code> Looking at the relation
 R_DLEQ, the relevant homomorphism is given by:
-<code>f_DLEQ : GF(p) -&gt;  GG^2 : w\mapsto (wG,wH)</code>
+<code>f_DLEQ : GF(p) -&gt;  GG^2 : w\mapsto (wG, wH)</code>
 If equality of discrete logarithms within <em>different</em> groups of the same
 prime order <code>p</code> is to be proven, the homomorphism to be considered would
 be:
-<code>f_DLEQ' : GF(p) -&gt; GG_1\timesGG_2 : w\mapsto (wG,wH)</code>
-where <code>G</code> and <code>H</code> would now be generators for $GG_1$ and $GG_2$,
+<code>f_DLEQ' : GF(p) -&gt; GG_1\timesGG_2 : w\mapsto (wG, wH)</code>
+where <code>G</code> and <code>H</code> would now be generators for <code>GG_1</code> and <code>GG_2</code>,
 respectively. All the techniques discussed in the remainder of this spec
 equally apply to both cases.
 :::<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 <p id="section-3.2-5">::: example
 Representation phi_REP Looking at the relation
-${R_rep}$, the relevant homomorphism is given by:
-<span class="contact-name">φ_rep : GF(p)^2 −&gt; GG : (w_1,w_2)↦ w_1 G + w_2 H.</span>
-:::<a href="#section-3.2-5" class="pilcrow">¶</a></p>
-<p id="section-3.2-6">We provide a generic template
+<code>{R_rep}</code>, the relevant homomorphism is given by:<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+<p id="section-3.2-6">\varphi_rep : GF(p)^2 -&gt; GG : (w_1, w_2)\mapsto w_1 G + w_2 H.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.2-7">:::<a href="#section-3.2-7" class="pilcrow">¶</a></p>
+<p id="section-3.2-8">We provide a generic template
 for all Sigma protocols for statements of the following form over
-DLOG groups:<a href="#section-3.2-6" class="pilcrow">¶</a></p>
-<p id="section-3.2-7">R_dl = {
-    ((Y_1, ... ,Y_m),(w_1, ... ,w_n)) in GG^m * GF(p)^n: (Y_1, ... ,Y_m)=\varphi(w_1, ... ,w_n)
-  }<a href="#section-3.2-7" class="pilcrow">¶</a></p>
-<p id="section-3.2-8">where $\varphi:GF(p)^n -&gt; GG^m$ is a group homomorphism.<a href="#section-3.2-8" class="pilcrow">¶</a></p>
-<p id="section-3.2-9">::: remark
+DLOG groups:<a href="#section-3.2-8" class="pilcrow">¶</a></p>
+<p id="section-3.2-9">R_dl = {
+    ((Y_1, ... , Y_m), (w_1, ... , w_n)) in GG^m * GF(p)^n: (Y_1, ... , Y_m)=\varphi(w_1, ... , w_n)
+  }<a href="#section-3.2-9" class="pilcrow">¶</a></p>
+<p id="section-3.2-10">where <code>\varphi:GF(p)^n -&gt; GG^m</code> is a group homomorphism.<a href="#section-3.2-10" class="pilcrow">¶</a></p>
+<p id="section-3.2-11">::: remark
 Selective disclosure of witnesses Note that in the following
 descriptions, all witnesses are assumed to be kept secret, i.e., none of
 them is disclosed to the verifier. In case it is required to disclose
-$w_j$, as is the case, e.g., in the context of attribute-based
+<code>w_j</code>, as is the case, e.g., in the context of attribute-based
 credential systems, the relation to be proven can be rewritten as
-follows:<a href="#section-3.2-9" class="pilcrow">¶</a></p>
-<p id="section-3.2-10">R_dl'= {
+follows:<a href="#section-3.2-11" class="pilcrow">¶</a></p>
+<p id="section-3.2-12">R_dl'= {
     \begin{array}{r}
-    ((Y_1', ... ,Y_m')),(w_1, ... ,w_{j-1},w_{j+1}, ... ,w_n)) in GG^m \times GF(p)^{n-1}: ~~~~~~~~~~~~<br>
-    (Y_1', ... ,Y_m')=\psi(w_1, ... ,w_{j-1},w_{j+1}, ... ,w_n)
+    ((Y_1', ... , Y_m')), (w_1, ... , w_{j-1}, w_{j+1}, ... , w_n)) in GG^m \times GF(p)^{n-1}: ~~~~~~~~~~~~<br>
+    (Y_1', ... , Y_m')=\psi(w_1, ... , w_{j-1}, w_{j+1}, ... , w_n)
     \end{array}
-    }<span class="contact-name">where</span>\begin{aligned}
-    (Y_1', ... ,Y_m')                                   &amp;:= (Y_1, ... ,Y_m)-\varphi(0, ... ,0,w_j,0, ... ,0)\text{ and}<br>
-      \psi(w_1, ... ,w_{j-1},w_{j+1}, ... ,w_n) &amp;:= \varphi(w_1, ... ,w_{j-1},0,w_{j+1}, ... ,w_n).<a href="#section-3.2-10" class="pilcrow">¶</a></p>
-<p id="section-3.2-11">However, the following <em>defines neither the morphism nor the label
+    }<a href="#section-3.2-12" class="pilcrow">¶</a></p>
+<p id="section-3.2-13">where<a href="#section-3.2-13" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-14">
+<pre>
+(Y_1', ... , Y_m')                                   &amp;:= (Y_1, ... , Y_m)-\varphi(0, ... , 0, w_j, 0, ... , 0)\text{ and}\\
+  \psi(w_1, ... , w_{j-1}, w_{j+1}, ... , w_n) &amp;:= \varphi(w_1, ... , w_{j-1}, 0, w_{j+1}, ... , w_n).
+</pre><a href="#section-3.2-14" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2-15">However, the following <em>defines neither the morphism nor the label
 associated to the protocol</em>. These will be defined later in the specific
-protocols.<a href="#section-3.2-11" class="pilcrow">¶</a></p>
+protocols.<a href="#section-3.2-15" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.2-12.1">
-            <p id="section-3.2-12.1.1"><code>DlogTemplate.new(ctx, Y_vec)</code>
-  internally stores $Y_vec$ and <code>ctx</code>.<a href="#section-3.2-12.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3.2-16.1">
+            <p id="section-3.2-16.1.1"><code>DlogTemplate.new(ctx, Y_vec)</code>
+  internally stores <code>Y_vec</code> and <code>ctx</code>.<a href="#section-3.2-16.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.2-13">-<a href="#section-3.2-13" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-14">
+<p id="section-3.2-17">-<a href="#section-3.2-17" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-18">
 <pre>
 (T_vec, pstate) &lt;- DlogTemplate.prover_commit(w_vec)
 
-sample random elements r_1, ... ,r_n &lt;- GF(p)
-T_vec =(T_1, ... ,T_m)=\varphi(r_1, ... ,r_n)
-pstate = (r_1, ... ,r_n)
+sample random elements r_1, ... , r_n &lt;- GF(p)
+T_vec =(T_1, ... , T_m)=\varphi(r_1, ... , r_n)
+pstate = (r_1, ... , r_n)
 return (T_vec, pstate)
-</pre><a href="#section-3.2-14" class="pilcrow">¶</a>
+</pre><a href="#section-3.2-18" class="pilcrow">¶</a>
 </div>
-<p id="section-3.2-15">-<a href="#section-3.2-15" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-16">
+<p id="section-3.2-19">-<a href="#section-3.2-19" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-20">
 <pre>
-s_vec &lt;- DlogTemplate.prover_response(pstate,c):
-(r_1, ... ,r_n)= pstate
-(w_1, ... ,w_n)= w_vec
+s_vec &lt;- DlogTemplate.prover_response(pstate, c):
+(r_1, ... , r_n)= pstate
+(w_1, ... , w_n)= w_vec
 e = FromBytes(c)
-for i = 1, ... ,n$: $s_i = r_i+e w_i
-return s_vec = (s_1, ... ,s_n)
-</pre><a href="#section-3.2-16" class="pilcrow">¶</a>
+for i = 1, ... , n`: `s_i = r_i+e w_i
+return s_vec = (s_1, ... , s_n)
+</pre><a href="#section-3.2-20" class="pilcrow">¶</a>
 </div>
 <ul class="normal">
-<li class="normal" id="section-3.2-17.1">
-            <p id="section-3.2-17.1.1"><code>DlogTemplate.label()</code> return
-  <code>morphism_label()</code>.<a href="#section-3.2-17.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3.2-21.1">
+            <p id="section-3.2-21.1.1"><code>DlogTemplate.label()</code> return
+  <code>morphism_label()</code>.<a href="#section-3.2-21.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-3.2-18">-<a href="#section-3.2-18" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-19">
+<p id="section-3.2-22">-<a href="#section-3.2-22" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-23">
 <pre>
-DlogTemplate.verifier(T_vec,c,s_vec)
+DlogTemplate.verifier(T_vec, c, s_vec)
 
 (s_1, ... , s_n) = s_vec
 (T_1, ... , T_m) = T_vec
 e = FromBytes(c)
-for `i =1, ... ,n`: check $s_i in GF(p)
-for $j =1, ... ,m$: check $T_j in GG
-return ((T_1 + eY_1, ... ,T_m + eY_m) = \varphi(s_1, ... ,s_n))
-</pre><a href="#section-3.2-19" class="pilcrow">¶</a>
+for `i =1, ... , n`: check $s_i in GF(p)
+for `j =1, ... , m`: check $T_j in GG
+return ((T_1 + eY_1, ... , T_m + eY_m) = \varphi(s_1, ... , s_n))
+</pre><a href="#section-3.2-23" class="pilcrow">¶</a>
 </div>
-<p id="section-3.2-20">-<a href="#section-3.2-20" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-21">
+<p id="section-3.2-24">-<a href="#section-3.2-24" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-25">
 <pre>
 s_vec = DlogTemplate.simulate_response()
 
-sample random elements $s_1, ... ,s_n &lt;-$-GF(p)$
-return $(s_1, ... , s_n)$
-</pre><a href="#section-3.2-21" class="pilcrow">¶</a>
+sample random elements `s_1, ... , s_n &lt;-`-GF(p)$
+return `(s_1, ... , s_n)`
+</pre><a href="#section-3.2-25" class="pilcrow">¶</a>
 </div>
-<p id="section-3.2-22">-<a href="#section-3.2-22" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3.2-23">
+<p id="section-3.2-26">-<a href="#section-3.2-26" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-27">
 <pre>
 T_vec &lt;- DlogTemplate.simulate_commitment(c, s_vec)
 
-(Y_1, ... ,Y_m) = Y_vec
-(s_1, ... ,s_n) = s_vec
+(Y_1, ... , Y_m) = Y_vec
+(s_1, ... , s_n) = s_vec
 e = FromBytes(c)
-(T_1, ... ,T_m) = \varphi(s_1, ... ,s_n) - e\cdot(Y_1, ... ,Y_m)
-return T_vec = (s_1, ... ,s_n)
-</pre><a href="#section-3.2-23" class="pilcrow">¶</a>
+(T_1, ... , T_m) = \varphi(s_1, ... , s_n) - e*(Y_1, ... , Y_m)
+return T_vec = (s_1, ... , s_n)
+</pre><a href="#section-3.2-27" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -1755,28 +1760,42 @@ return T_vec = (s_1, ... ,s_n)
 <div class="alignLeft art-text artwork" id="section-3.3-2">
 <pre>
 R_lin = {
-  ((Y_1, ... ,Y_m),(w_1, ... ,w_n)) :
-  \begin{array}{c} (Y_1, ... ,Y_m)=\varphi(w_1, ... ,w_n) \\
-              A\cdot(w_1, ... ,w_n)^ in tercal = (b_1, ... ,b_k)^ in tercal\end{array}},
+  ((Y_1, ... , Y_m), (w_1, ... , w_n)) :
+  \begin{array}{c} (Y_1, ... , Y_m)=\varphi(w_1, ... , w_n) \\
+              A*(w_1, ... , w_n)^ in tercal = (b_1, ... , b_k)^ in tercal\end{array}},
 </pre><a href="#section-3.3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-3.3-3">where the matrix $A in GF(p)^{k\times n}$ and vector
-$(b_1, ... ,b_k) in GF(p)^k$ specify the system of linear equations.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">where the matrix <code>A in GF(p)^{k\times n}</code> and vector
+<code>(b_1, ... , b_k) in GF(p)^k</code> specify the system of linear equations.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
 <p id="section-3.3-4">In the following, we sketch how such relations can be translated into
 relations of the form discussed in (#sec:basic_sigma). We assume that <code>A</code> is of the following
-form: <span class="contact-name">A = łeft(\begin{array}{cccccccc}       a_{11}     &amp; ...       &amp; a_{1k}    &amp; 1         &amp; 0       &amp; 0     &amp; ...    &amp; 0\\       a_{21}     &amp; ...       &amp; a_{2k}    &amp; 0         &amp; 1       &amp; 0     &amp; ...    &amp; ⋮\\       ⋮     &amp;             &amp; ⋮    &amp; ⋮    &amp;         &amp; ⋮&amp;          &amp; 0\\       ⋮     &amp;             &amp; ⋮    &amp; ⋮    &amp;         &amp; 0     &amp; 1        &amp; 0\\       a_{k1}     &amp; ...       &amp; a_{kk}    &amp; 0         &amp; ...   &amp; ... &amp; 0        &amp; 1\\     \end{array}\right)</span> Note that this is without loss of generality.
+form:<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.3-5">
+<pre>
+A = \left(\begin{array}{cccccccc}
+  a_{11}     &amp; ...       &amp; a_{1k}    &amp; 1         &amp; 0       &amp; 0     &amp; ...    &amp; 0\\
+  a_{21}     &amp; ...       &amp; a_{2k}    &amp; 0         &amp; 1       &amp; 0     &amp; ...    &amp; \vdots\\
+  \vdots     &amp;             &amp; \vdots    &amp; \vdots    &amp;         &amp; \vdots&amp;          &amp; 0\\
+  \vdots     &amp;             &amp; \vdots    &amp; \vdots    &amp;         &amp; 0     &amp; 1        &amp; 0\\
+  a_{k1}     &amp; ...       &amp; a_{kk}    &amp; 0         &amp; ...   &amp; ... &amp; 0        &amp; 1\\
+\end{array}\right)
+</pre><a href="#section-3.3-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-6">Note that this is without loss of generality.
 If the system of linear equations has a different form, the above form
 can always be achieved using Gaussian elimination [@shoup08 Sec. 14.4]
 and re-ordering of the witnesses. Note that we only need to consider the
-case where $k&lt;n$, as otherwise the linear equations would uniquely
-determine the witnesses, which is not desirable in our context.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
-<p id="section-3.3-5">The following relation ${R_lin}'$ is now
-equivalent to that specified by ${R_lin}$:<a href="#section-3.3-5" class="pilcrow">¶</a></p>
-<p id="section-3.3-6">R_lin'=\set{((Y_1, ... ,Y_m),(w_1, ... ,w_{n-k})) :
-(Y_1, ... ,Y_m)=\psi(w_1, ... ,w_{n-k})}<span class="contact-name">where</span>\begin{aligned}
-  \psi(w_1, ... ,w_{n-k}) &amp;:= \varphi(w_1, ... ,w_{n-k},-\sum_{i =1}^{n-k}a_{1i}w_i, ... ,-\sum_{i = 1}^{n-k}a_{ki}w_i)\text{ and}<br>
-  (Y_1', ... ,Y_m')   &amp;:= (Y_1, ... ,Y_m) - \varphi(0, ... ,0,b_1, ... ,b_k).
-\end{aligned}$$<a href="#section-3.3-6" class="pilcrow">¶</a></p>
+case where <code>k&lt;n</code>, as otherwise the linear equations would uniquely
+determine the witnesses, which is not desirable in our context.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
+<p id="section-3.3-7">The following relation <code>{R_lin}'</code> is now
+equivalent to that specified by <code>{R_lin}</code>:<a href="#section-3.3-7" class="pilcrow">¶</a></p>
+<p id="section-3.3-8">R_lin'=\set{((Y_1, ... , Y_m), (w_1, ... , w_{n-k})) :
+(Y_1, ... , Y_m)=\psi(w_1, ... , w_{n-k})}<a href="#section-3.3-8" class="pilcrow">¶</a></p>
+<p id="section-3.3-9">where<a href="#section-3.3-9" class="pilcrow">¶</a></p>
+<p id="section-3.3-10">\begin{aligned}
+  \psi(w_1, ... , w_{n-k}) &amp;:= \varphi(w_1, ... , w_{n-k}, -\sum_{i =1}^{n-k}a_{1i}w_i, ... , -\sum_{i = 1}^{n-k}a_{ki}w_i)\text{ and}<br>
+  (Y_1', ... , Y_m')   &amp;:= (Y_1, ... , Y_m) - \varphi(0, ... , 0, b_1, ... , b_k).
+  \end{aligned}<a href="#section-3.3-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec_instantiations">
@@ -1785,21 +1804,22 @@ equivalent to that specified by ${R_lin}$:<a href="#section-3.3-5" class="pilcro
 <a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
         </h3>
 <p id="section-3.4-1">Let <code>GG</code> be a group over an elliptic curve with prime order <code>p</code>. Denote
-with $G in GG$ a generator of <code>GG</code>.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+with <code>G in GG</code> a generator of <code>GG</code>.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <div id="sec_instantiations_schnorr">
 <section id="section-3.4.1">
           <h4 id="name-schnorr-signatures">
 <a href="#section-3.4.1" class="section-number selfRef">3.4.1. </a><a href="#name-schnorr-signatures" class="section-name selfRef">Schnorr signatures</a>
           </h4>
-<p id="section-3.4.1-1">Schnorr signatures prove knowledge of the discrete logarithm $w in  GF(p)$ of a point $Y = wG$ in
+<p id="section-3.4.1-1">Schnorr signatures prove knowledge of the discrete logarithm <code>w in  GF(p)</code> of a point <code>Y = wG</code> in
 base <code>G</code>.<a href="#section-3.4.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.4.1-2.1">
               <p id="section-3.4.1-2.1.1"><code>\varphi:GF(p) -&gt; GG:w -&gt; wG</code><a href="#section-3.4.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-3.4.1-2.2">
-              <p id="section-3.4.1-2.2.1"><code>Schnorr.morphism_label()</code>: return:
-  $$\hash(\texttt{\textquotesingle{}schnorrsig\textquotesingle}, curve \mathbf{\mid}~<code>Serialize(G) ,~</code>Serialize<code>(Y))</code>$<a href="#section-3.4.1-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-3.4.1-2.2.1"><code>Schnorr.morphism_label()</code>: return:<a href="#section-3.4.1-2.2.1" class="pilcrow">¶</a></p>
+<p id="section-3.4.1-2.2.2">
+???<a href="#section-3.4.1-2.2.2" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.4.1-3">For a description of this proof goal in the general case of residue
@@ -1812,14 +1832,15 @@ classes, we also refer to [@zkproof-reference 1.4.1].<a href="#section-3.4.1-3"
 <a href="#section-3.4.2" class="section-number selfRef">3.4.2. </a><a href="#name-discrete-logarithm-equality" class="section-name selfRef">Discrete logarithm equality</a>
           </h4>
 <p id="section-3.4.2-1">So-called DLEQ proofs prove equality of the discrete logarithm, that is:
-$Y_1 = wG$ and $Y_2 = wH$.<a href="#section-3.4.2-1" class="pilcrow">¶</a></p>
+<code>Y_1 = wG</code> and <code>Y_2 = wH</code>.<a href="#section-3.4.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.4.2-2.1">
-              <p id="section-3.4.2-2.1.1">$\varphi:GF(p) -&gt; GG^2:w\mapsto (wG,wH)$<a href="#section-3.4.2-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-3.4.2-2.1.1"><code>\varphi:GF(p) -&gt; GG^2:w\mapsto (wG, wH)</code><a href="#section-3.4.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-3.4.2-2.2">
-              <p id="section-3.4.2-2.2.1"><code>Dleq.morphism_label()</code>: return
-  $$\hash(\texttt{\textquotesingle{}dleq\textquotesingle},~{curve}\mathbf{\mid}~<code>Serialize(G) ,~</code>Serialize<code>(H) ,~</code>Serialize<code>(Y_1) ,~</code>Serialize<code>(Y_2))</code>$<a href="#section-3.4.2-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-3.4.2-2.2.1"><code>Dleq.morphism_label()</code>: return<a href="#section-3.4.2-2.2.1" class="pilcrow">¶</a></p>
+<p id="section-3.4.2-2.2.2">
+??<a href="#section-3.4.2-2.2.2" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -1831,20 +1852,21 @@ $Y_1 = wG$ and $Y_2 = wH$.<a href="#section-3.4.2-1" class="pilcrow">¶</a></p>
           </h4>
 <p id="section-3.4.3-1">Let <code>GG</code> be a group over an elliptic curve with prime order <code>p</code>.
 Proving knowledge of the exponents of a valid Diffie-Hellman triple
-means proving knowledge of $w_1,w_2 in GF(p)$ such that $Y_1= w_1G$,
-$Y_2= w_2G$, and $Y_3= w_1 w_2 G$. The mapping
-$GF(p)^2 -&gt; GG^3:(w_1,w_2)\mapsto (w_1G,w_2G,w_1w_2G)$ is not a
+means proving knowledge of <code>w_1, w_2 in GF(p)</code> such that <code>Y_1= w_1G</code>,
+<code>Y_2= w_2G</code>, and <code>Y_3= w_1 w_2 G</code>. The mapping
+<code>GF(p)^2 -&gt; GG^3:(w_1, w_2)\mapsto (w_1G, w_2G, w_1w_2G)</code> is not a
 homomorphism, and consequently the basic protocol presented before
 cannot be deployed directly. However, the required multiplicative
 relation can be proven by observing that the proof goal is equivalent to
-$Y_1= w_1G$, $Y_2= w_2G$, and $Y_3= w_2Y_1$, leading the homomorphism<a href="#section-3.4.3-1" class="pilcrow">¶</a></p>
+<code>Y_1= w_1G</code>, <code>Y_2= w_2G</code>, and <code>Y_3= w_2Y_1</code>, leading the homomorphism<a href="#section-3.4.3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.4.3-2.1">
-              <p id="section-3.4.3-2.1.1">$\varphi:GF(p)^2 -&gt; GG^3:(w_1,w_2)\mapsto(w_1G,w_2G,w_2Y_1)$<a href="#section-3.4.3-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-3.4.3-2.1.1"><code>\varphi:GF(p)^2 -&gt; GG^3:(w_1, w_2)\mapsto(w_1G, w_2G, w_2Y_1)</code><a href="#section-3.4.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-3.4.3-2.2">
-              <p id="section-3.4.3-2.2.1"><code>Dh.morphism_label()</code> return:
-  $$\hash(\texttt{\textquotesingle{}diffie-hellman\textquotesingle},~{curve}\mathbf{\mid}~<code>Serialize(G) ,~</code>Serialize<code>(Y_1) ,~</code>Serialize<code>(Y_2))</code>$<a href="#section-3.4.3-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-3.4.3-2.2.1"><code>Dh.morphism_label()</code> return:<a href="#section-3.4.3-2.2.1" class="pilcrow">¶</a></p>
+<p id="section-3.4.3-2.2.2">
+??<a href="#section-3.4.3-2.2.2" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.4.3-3">As shown in this example, and in contrast to linear relations,
@@ -1860,47 +1882,51 @@ reformulation of the proof goal.<a href="#section-3.4.3-3" class="pilcrow">¶</a
 <p id="section-3.4.4-1">Let <code>GG</code> be a group over an elliptic curve of prime order <code>p</code>, and let
 <code>G_1, ... , G_m</code> be generators of <code>GG</code>. Proving knowledge of a valid
 opening of a Pedersen commitment means proving knowledge of
-<code>w_1,w_2, ... , w_m in GF(p)</code> such that
+<code>w_1, w_2, ... , w_m in GF(p)</code> such that
 <code>Y = w_1G_1 + w_2G_2 + ... + w_m G_m</code>.<a href="#section-3.4.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.4.4-2.1">
-              <p id="section-3.4.4-2.1.1">$\varphi:GF(p)^m -&gt; GG:(w_1,w_2, ... , w_m)\mapsto \sum_i w_iG_i$<a href="#section-3.4.4-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-3.4.4-2.1.1"><code>\varphi:GF(p)^m -&gt; GG:(w_1, w_2, ... , w_m)\mapsto \sum_i w_iG_i</code><a href="#section-3.4.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-3.4.4-2.2">
-              <p id="section-3.4.4-2.2.1"><code>Rep.morphism_label()</code> returns
-  $$\hash(\texttt{\textquotesingle{}representation\textquotesingle},~{curve}\mathbf{\mid}~<code>Serialize(G_1) ,~\cdots ,~</code>Serialize<code>(G_m) ,~</code>Serialize<code>(Y))</code>$<a href="#section-3.4.4-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-3.4.4-2.2.1"><code>Rep.morphism_label()</code> returns<a href="#section-3.4.4-2.2.1" class="pilcrow">¶</a></p>
+<p id="section-3.4.4-2.2.2">
+\hash(\texttt{\textquotesingle{}representation\textquotesingle}, ~{curve}\mathbf{\mid}~<code>Serialize(G_1) , ~*s , ~</code>Serialize<code>(G_m) , ~</code>Serialize<code>(Y))</code>$<a href="#section-3.4.4-2.2.2" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.4.4-3">::: example
 Range proofs via bit decomposition Let <code>GG</code> be a cyclic group of prime
-order <code>p</code>, and let <code>G</code> and <code>H</code> be generators of <code>GG</code>, and let $\ell$ be
-a non-negative integer satisfying $\ell&lt;\log_2 p$. Consider the
-following relation:
-<span class="contact-name">{R_range} = \set{łeft(Y,(w_1,w_2))\right)~:~Y = w_1 G +w_2 H ~łand~ w_1 in [0,2^ℓ)}.</span>
-Multiple techniques for proving that a secret witness lies within a
+order <code>p</code>, and let <code>G</code> and <code>H</code> be generators of <code>GG</code>, and let <code>\ell</code> be
+a non-negative integer satisfying <code>\ell&lt;\log_2 p</code>. Consider the
+following relation:<a href="#section-3.4.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4.4-4">R_range = \set{\left(Y, (w_1, w_2))\right)~:~Y = w_1 G +w_2 H ~\land~ w_1 in [0, 2^\ell)<a href="#section-3.4.4-4" class="pilcrow">¶</a></p>
+<p id="section-3.4.4-5">Multiple techniques for proving that a secret witness lies within a
 certain range, cf. Morais et al. [@range-proof-survey] for a survey. We
-will use the so-called <em>bit decomposition</em> approach.<a href="#section-3.4.4-3" class="pilcrow">¶</a></p>
-<p id="section-3.4.4-4">To do so, the prover computes $w_{1,i} in \set{0,1}$ for
-$i =0, ... ,\ell-1$ such that $w_1=\sum_{i =0}^{\ell-1}2^iw_{1,i}$, and
+will use the so-called <em>bit decomposition</em> approach.<a href="#section-3.4.4-5" class="pilcrow">¶</a></p>
+<p id="section-3.4.4-6">To do so, the prover computes <code>w_{1, i} in \set{0, 1}</code> for
+<code>i =0, ... , \ell-1</code> such that <code>w_1=\sum_{i =0}^{\ell-1}2^iw_{1, i}</code>, and
 computes commitments to those individual bits, i.e.,
-$Y_i = w_{1,i}G+w_{2,i}H$ for $w_{2,i} &lt;-$- GF(p)$. Furthermore, it sets
-$w^*= w_2-\sum_{i =0}^{\ell-1}2^iw_{2,i}$.<a href="#section-3.4.4-4" class="pilcrow">¶</a></p>
-<p id="section-3.4.4-5">Assuming that the discrete logarithm problem is hard in <code>GG</code>, the above
-relation is now equivalent to the following relation: $$\begin{aligned}
-      {R_range}' = \bigg{\left((Y,(Y_i)<em>{i =0}^{\ell-1}),(w_1,w_2,(w</em>{2,i})<em>{i =0}^{\ell-1}),w^*)\right)~:~         Y = w_1 G +w_2 H ~\land~ <br>
-        Y-\sum</em>{i =0}^{\ell-1} 2^iY_i = w^* H ~\land~  <br>
-        \bigwedge_{i =0}^{\ell-1} \left(Y_i = w_{2,i}H ~\lor~ Y_i-G = w_{2,i}H\right)\bigg}.<a href="#section-3.4.4-5" class="pilcrow">¶</a></p>
-<p id="section-3.4.4-6">\end{aligned}$$<a href="#section-3.4.4-6" class="pilcrow">¶</a></p>
-<p id="section-3.4.4-7">It can now be seen that the above ensures knowledge of the witnesses $w_1$
+<code>Y_i = w_{1, i}G+w_{2, i}H</code> for <code>w_{2, i} &lt;-</code>- GF(p)$. Furthermore, it sets
+<code>w^*= w_2-\sum_{i =0}^{\ell-1}2^iw_{2, i}</code>.<a href="#section-3.4.4-6" class="pilcrow">¶</a></p>
+<p id="section-3.4.4-7">Assuming that the discrete logarithm problem is hard in <code>GG</code>, the above
+relation is now equivalent to the following relation:<a href="#section-3.4.4-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.4.4-8">
+<pre>
+  {R_range}' = \bigg\{\left((Y, (Y_i)_{i =0}^{\ell-1}), (w_1, w_2, (w_{2, i})_{i =0}^{\ell-1}), w^*)\right)~:~         Y = w_1 G +w_2 H ~\land~ \\
+    Y-\sum_{i =0}^{\ell-1} 2^iY_i = w^* H ~\land~  \\
+    \bigwedge_{i =0}^{\ell-1} \left(Y_i = w_{2, i}H ~\lor~ Y_i-G = w_{2, i}H\right)\bigg\}.
+</pre><a href="#section-3.4.4-8" class="pilcrow">¶</a>
+</div>
+<p id="section-3.4.4-9">It can now be seen that the above ensures knowledge of the witnesses <code>w_1</code>
 hidden within <code>Y</code>. Furthermore, we guarantee that the values hidden within
-$Y_i$ correctly add up to $w_1$, i.e., that
-$w_1-\sum_{i =0}^{\ell-1}2^iw_{1,i}=0$. Finally, the two clauses
-ensure that each $Y_i$ is a commitment to
-either <code>0</code> or <code>1</code>, thus implying the bound on $w_1$.<a href="#section-3.4.4-7" class="pilcrow">¶</a></p>
-<p id="section-3.4.4-8">The different clauses can
+<code>Y_i</code> correctly add up to <code>w_1</code>, i.e., that
+<code>w_1-\sum_{i =0}^{\ell-1}2^iw_{1, i}=0</code>. Finally, the two clauses
+ensure that each <code>Y_i</code> is a commitment to
+either <code>0</code> or <code>1</code>, thus implying the bound on <code>w_1</code>.<a href="#section-3.4.4-9" class="pilcrow">¶</a></p>
+<p id="section-3.4.4-10">The different clauses can
 finally be composed using nested protocol compositions from
 <span><a href="#sec_composition" class="internal xref">2.5</a> (<a href="#sec_composition" class="auto internal xref">Section 6</a>)</span>.
-:::<a href="#section-3.4.4-8" class="pilcrow">¶</a></p>
+:::<a href="#section-3.4.4-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1911,22 +1937,27 @@ finally be composed using nested protocol compositions from
 <a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-batch-verification" class="section-name selfRef">Batch verification</a>
         </h3>
 <p id="section-3.5-1">The batchable form can take advantage of the following fact. Given
-$\ell$ verification equations of the form:
-<span class="contact-name">T_i + c_i Y_i = ∑_j s_j G_{i,j}</span> for $i =1, ... ,\ell$, the
+<code>\ell</code> verification equations of the form:<a href="#section-3.5-1" class="pilcrow">¶</a></p>
+<p id="section-3.5-2">T_i + c_i Y_i = \sum_j s_j G_{i, j}<a href="#section-3.5-2" class="pilcrow">¶</a></p>
+<p id="section-3.5-3">for <code>i =1, ... , \ell</code>, the
 verifier can sample a random vector of coefficients
-$a_vec in GF(p)^\ell$ and instead test:
-<span class="contact-name">łeft(∑_{i =1}^{ℓ} a_i T_i\right) + łeft(∑_{i =1}^{ℓ} a_i ⋅  c_i Y_i \right) = łeft(∑_{i =1}^{ℓ} a_i ⋅ ∑_j s_j G_{i,j}\right).</span>
-If the matrix $G_{i, j}$ of generators has identical rows, by linearity
+<code>a_vec in GF(p)^\ell</code> and instead test:<a href="#section-3.5-3" class="pilcrow">¶</a></p>
+<p id="section-3.5-4">\left(\sum_{i =1}^{\ell} a_i T_i\right) + \left(\sum_{i =1}^{\ell} a_i *  c_i Y_i \right) = \left(\sum_{i =1}^{\ell} a_i * \sum_j s_j G_{i, j}\right).<a href="#section-3.5-4" class="pilcrow">¶</a></p>
+<p id="section-3.5-5">If the matrix <code>G_{i, j}</code> of generators has identical rows, by linearity
 the right-hand side can be computed as a single scalar product. If the
-statements $Y_i$'s have identical rows, by linearity the second term in
-the equation can be computed as a single scalar product.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
-<p id="section-3.5-2">In any case, the test can be efficiently implemented as a single
+statements <code>Y_i</code>'s have identical rows, by linearity the second term in
+the equation can be computed as a single scalar product.<a href="#section-3.5-5" class="pilcrow">¶</a></p>
+<p id="section-3.5-6">In any case, the test can be efficiently implemented as a single
 multi-scalar multiplication, minimizing the number of group operations
-needed:
-<span class="contact-name">łeft(∑_{i =1}^{ℓ} a_i T_i\right) + łeft(∑_{i =1}^{ℓ} (a_i ⋅  c_i) Y_i \right) + łeft(∑_{i =1}^{ℓ}∑_j (−a_i ⋅  s_j) G_{i,j}\right) = 0.</span><a href="#section-3.5-2" class="pilcrow">¶</a></p>
-<p id="section-3.5-3">The random vector $a_vec$ can be <em>deterministically</em> generated by
-fixing $a_1 = 1$ and setting
-$(a_2, ... , a_{\ell}) =\prg(H(c, s_vec))$ [@bip-schnorr].<a href="#section-3.5-3" class="pilcrow">¶</a></p>
+needed:<a href="#section-3.5-6" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.5-7">
+<pre>
+\left(\sum_{i =1}^{\ell} a_i T_i\right) + \left(\sum_{i =1}^{\ell} (a_i *  c_i) Y_i \right) + \left(\sum_{i =1}^{\ell}\sum_j (-a_i *  s_j) G_{i, j}\right) = 0
+</pre><a href="#section-3.5-7" class="pilcrow">¶</a>
+</div>
+<p id="section-3.5-8">The random vector <code>a_vec</code> can be <em>deterministically</em> generated by
+fixing <code>a_1 = 1</code> and setting
+<code>(a_2, ... , a_{\ell}) =\prg(H(c, s_vec))</code> [@bip-schnorr].<a href="#section-3.5-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2002,14 +2033,14 @@ Sigma protocol for the following relation:<a href="#section-6.1-1" class="pilcro
 <div class="alignLeft art-text artwork" id="section-6.1-2">
 <pre>
 R_and = {
-  ((Y_0,Y_1),(w_0,w_1) : (Y_0,w_0) in R_0 AND (Y_1,w_1) in R_1
+  ((Y_0, Y_1), (w_0, w_1) : (Y_0, w_0) in R_0 AND (Y_1, w_1) in R_1
 }
 </pre><a href="#section-6.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-6.1-3">For the rest of this section, the witness <code>w</code> for the Sigma protocol
-will now be a pair $(w_0, w_1)$ of witnesses, and the associated
-statement <code>Y</code> will be a pair $(Y_0, Y_1)$ of statements, where $w_0$ is
-the witness for the statement $Y_0$, and $w_1$ is the witness for $Y_1$.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+will now be a pair <code>(w_0, w_1)</code> of witnesses, and the associated
+statement <code>Y</code> will be a pair <code>(Y_0, Y_1)</code> of statements, where <code>w_0</code> is
+the witness for the statement <code>Y_0</code>, and <code>w_1</code> is the witness for <code>Y_1</code>.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
 <p id="section-6.1-4">Intuitively, the AND composition simply runs the instances of the
 different protocols to be composed in parallel, using the same challenge
 <code>c</code> for both instances. The verifier will then accept the protocol run,
@@ -2026,10 +2057,10 @@ algorithms:<a href="#section-6.1-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.1-9">
 <pre>
 (T_vec, pstate) &lt;- AndComposition.prover_commit(w_vec)
-(w_0,w_1) = w_vec
+(w_0, w_1) = w_vec
 (T_0, pstate_0) &lt;- left.prover_commit(w_0)
 (T_1, pstate_1) &lt;- right.prover_commit(w_1)
-return (T_vec,pstate) = ((T_0,  T_1),(pstate_0, pstate_1))
+return (T_vec, pstate) = ((T_0,  T_1), (pstate_0, pstate_1))
 </pre><a href="#section-6.1-9" class="pilcrow">¶</a>
 </div>
 <p id="section-6.1-10">-<a href="#section-6.1-10" class="pilcrow">¶</a></p>
@@ -2037,10 +2068,10 @@ return (T_vec,pstate) = ((T_0,  T_1),(pstate_0, pstate_1))
 <pre>
 s_vec &lt;- AndComposition.prover_response(pstate, c)
 
-(pstate_0,pstate_1)= pstate`
-s_0 &lt;- left.prover_response(pstate_0, c)`
-s_1 &lt;- right.prover_response(pstate_1, c)`
-return s_vec = (s_0,s_1)
+(pstate_0, pstate_1)= pstate
+s_0 &lt;- left.prover_response(pstate_0, c)
+s_1 &lt;- right.prover_response(pstate_1, c)
+return s_vec = (s_0, s_1)
 </pre><a href="#section-6.1-11" class="pilcrow">¶</a>
 </div>
 <p id="section-6.1-12">-<a href="#section-6.1-12" class="pilcrow">¶</a></p>
@@ -2048,42 +2079,47 @@ return s_vec = (s_0,s_1)
 <pre>
 AndComposition.verifier(T_vec, c, s_vec)
 
-(s_0, s_1)= s_vec$.
-return (left.verifier(T_0,c, s_0) and right.verifier(T_1,c, s_1))
+(s_0, s_1)= s_vec
+return (left.verifier(T_0, c, s_0) and right.verifier(T_1, c, s_1))
 </pre><a href="#section-6.1-13" class="pilcrow">¶</a>
 </div>
 <p id="section-6.1-14">-<a href="#section-6.1-14" class="pilcrow">¶</a></p>
-<p id="section-6.1-15"><code>AndComposition.label()</code> is computed as:
-    $<code>H((\texttt{\textquotesingle{}and-composition\textquotesingle}\mathbf{\mid}~</code>left.label()<code> ,~</code>right.label()<code>)</code>$
-    The supported hash functions are described in [@draft-orru-zkproof-fs].<a href="#section-6.1-15" class="pilcrow">¶</a></p>
-<p id="section-6.1-16">-<a href="#section-6.1-16" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-6.1-17">
+<p id="section-6.1-15"><code>AndComposition.label()</code> is computed as:<a href="#section-6.1-15" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-6.1-16">
+<pre>
+  H((\texttt{\textquotesingle{}and-composition\textquotesingle}\mathbf{\mid}~`left.label()` , ~`right.label()`)
+
+The supported hash functions are described in [@draft-orru-zkproof-fs].
+</pre><a href="#section-6.1-16" class="pilcrow">¶</a>
+</div>
+<p id="section-6.1-17">-<a href="#section-6.1-17" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-6.1-18">
 <pre>
 AndComposition.simulate_response()
 
 s_0 &lt;- left.simulate_response()
 s_1 &lt;- right.simulate_response()
-return s_vec = (s_0,s_1)
-</pre><a href="#section-6.1-17" class="pilcrow">¶</a>
+return s_vec = (s_0, s_1)
+</pre><a href="#section-6.1-18" class="pilcrow">¶</a>
 </div>
-<p id="section-6.1-18">-<a href="#section-6.1-18" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-6.1-19">
+<p id="section-6.1-19">-<a href="#section-6.1-19" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-6.1-20">
 <pre>
 AndComposition.simulate_commitment(c, s_vec)
 
-(s_0,s_1) = s_vec
-T_0 &lt;- left.simulate_commitment(c,s_0)
-T_1 &lt;- right.simulate_commitment(c,s_1)
+(s_0, s_1) = s_vec
+T_0 &lt;- left.simulate_commitment(c, s_0)
+T_1 &lt;- right.simulate_commitment(c, s_1)
 return T_vec = (T_0, T_1)
-</pre><a href="#section-6.1-19" class="pilcrow">¶</a>
+</pre><a href="#section-6.1-20" class="pilcrow">¶</a>
 </div>
-<p id="section-6.1-20">::: warning
+<p id="section-6.1-21">::: warning
 Witness equality Note that the AND-composition defined in the following
 gives no guarantee about equality of the witnesses: if the same witness
 is used across different clauses of the AND-composition, the protocol
 will not guarantee that they are indeed the same.
 How to achieve such claims is discussed in (#sec:linear_relations).
-:::<a href="#section-6.1-20" class="pilcrow">¶</a></p>
+:::<a href="#section-6.1-21" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="or-composition">
@@ -2098,16 +2134,16 @@ below constitute a Sigma protocol for the following relation:<a href="#section-6
 <div class="alignLeft art-text artwork" id="section-6.2-2">
 <pre>
 R_or = {
-    ((Y_0,Y_1),(w_0,w_1) :
-    (Y_0,w_0) in  R_0 OR (Y_1,w_1) in R_1
+    ((Y_0, Y_1), (w_0, w_1) :
+    (Y_0, w_0) in  R_0 OR (Y_1, w_1) in R_1
 }
 </pre><a href="#section-6.2-2" class="pilcrow">¶</a>
 </div>
-<p id="section-6.2-3">The statement <code>Y</code> is the pair $(Y_0, Y_1)$ of the composing statements,
-and the witness <code>w</code> is the pair $(w_0, w_1)$ of the witnesses for the
-respective relation. One of the witness can be set to $\mathsf{None}$.
-In the following protocol specification, let <code>j</code> be such that $w_j$ is
-known to the prover, whereas without loss of generality $w_{1-j}$ is
+<p id="section-6.2-3">The statement <code>Y</code> is the pair <code>(Y_0, Y_1)</code> of the composing statements,
+and the witness <code>w</code> is the pair <code>(w_0, w_1)</code> of the witnesses for the
+respective relation. One of the witness can be set to <code>\mathsf{None}</code>.
+In the following protocol specification, let <code>j</code> be such that <code>w_j</code> is
+known to the prover, whereas without loss of generality <code>w_{1-j}</code> is
 assumed to be unknown to the prover.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
 <p id="section-6.2-4">On a high level, the protocol works as follows. Using the simulator, the
 prover first simulates a transcript for the unknown witness (keeping the
@@ -2131,26 +2167,26 @@ the following algorithms:<a href="#section-6.2-5" class="pilcrow">¶</a></p>
 <p id="section-6.2-7">-<a href="#section-6.2-7" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.2-8">
 <pre>
-(T_vec, pstate) &lt;- OrComposition.prover_commit(w_vec)
+OrComposition.prover_commit(w_vec)
 
 Prover = [left, right]
-(w_0,w_1)= w_vec`, and let $j in \bin$ be the first index for which $w[j]!= None$
-(T_j,`pstate`_j)&lt;-Prover[j].prover_commit(Y_j,w_j)
-s_{1-j}&lt;-Prover`[1-j].`simulate_response()
-choose a random $c_{1-j}$ in $\mathcal{C}$
-T_{1-j}&lt;- Prover[1-j].simulate_commitment(c_{1-j},s_{1-j})
-return `(T_vec, pstate) =((T_0,T_1),(pstate[j],c_{1-j},s_{1-j}))
+(w_0, w_1)= w_vec, and let `j in \bin` be the first index for which `w[j]!= None`
+(T[j], pstate[j]) &lt;- Prover[j].prover_commit(Y_j, w_j)
+s[1-j] &lt;- Prover[1-j].simulate_response()
+choose a random `c_{1-j}` in `\mathcal{C}`
+T[1-j]&lt;- Prover[1-j].simulate_commitment(c_{1-j}, s_{1-j})
+return (T_vec, pstate) = ((T_0, T_1), (pstate[j], c_{1-j}, s_{1-j}))
 </pre><a href="#section-6.2-8" class="pilcrow">¶</a>
 </div>
 <p id="section-6.2-9">-<a href="#section-6.2-9" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.2-10">
 <pre>
-s_vec &lt;- OrComposition.prover_response(pstate, c)
+OrComposition.prover_response(pstate, c)
 
-(pstate[j],c[1-j],s_[1-j])= pstate
+(pstate[j], c[1-j], s_[1-j])= pstate
 c[j]= c XOR c[1-j]
 s[j] &lt;- Prover[j].prover_response(pstate[j], c[j])
-return s_vec = (s_0,s_1, c_0)
+return s_vec = (s_0, s_1, c_0)
 </pre><a href="#section-6.2-10" class="pilcrow">¶</a>
 </div>
 <p id="section-6.2-11">-<a href="#section-6.2-11" class="pilcrow">¶</a></p>
@@ -2160,25 +2196,29 @@ OrComposition.verifier(T_vec, c, s_vec)
 
 (s_0, s_1, c_0) = s_vec
 c_1= c\oplus c_0
-return (left.verifier(T_0,c_0,s_0) and right.verifier(T_1,c_1,s_1))
+return (left.verifier(T_0, c_0, s_0) and right.verifier(T_1, c_1, s_1))
 </pre><a href="#section-6.2-12" class="pilcrow">¶</a>
 </div>
 <ul class="normal">
 <li class="normal" id="section-6.2-13.1">
-            <p id="section-6.2-13.1.1"><code>OrComposition.label()</code> is computed as:
-  $<code>H((\texttt{\textquotesingle{}or-composition\textquotesingle}\mathbf{\mid}~</code>left.label()<code> ,~</code>right.label()<code>)</code>$<a href="#section-6.2-13.1.1" class="pilcrow">¶</a></p>
+            <p id="section-6.2-13.1.1"><code>OrComposition.label()</code> is computed as:<a href="#section-6.2-13.1.1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-6.2-13.1.2">
+<pre>
+H((\texttt{\textquotesingle{}or-composition\textquotesingle}\mathbf{\mid}~`left.label()` , ~`right.label()`)
+</pre><a href="#section-6.2-13.1.2" class="pilcrow">¶</a>
+</div>
 </li>
         </ul>
 <p id="section-6.2-14">-<a href="#section-6.2-14" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.2-15">
 <pre>
-s_vec &lt;- OrComposition.simulate_response()
+sOrComposition.simulate_response()
 
-(Y_0,Y_1)= Y_vec$.
-s_0&lt;-`left.simulate_response()`
-s_1&lt;-`right.simulate_response()`
-choose a random $c_0$ in $\mathcal{C}$.
-return $s_vec=(s_0,s_1,c_0)$.
+(Y_0, Y_1) = Y_vec
+s_0 &lt;- left.simulate_response()
+s_1 &lt;- right.simulate_response()
+choose a random `c_0` in $\mathcal{C}
+return s_vec = (s_0, s_1, c_0)
 </pre><a href="#section-6.2-15" class="pilcrow">¶</a>
 </div>
 <p id="section-6.2-16">-<a href="#section-6.2-16" class="pilcrow">¶</a></p>
@@ -2186,11 +2226,11 @@ return $s_vec=(s_0,s_1,c_0)$.
 <pre>
 T_vec &lt;- OrComposition.simulate_commitment(c, s_vec)
 
-(s_0,s_1,c_0) = s_vec
+(s_0, s_1, c_0) = s_vec
 c_1 = c XOR c_0
-T_0 &lt;-left.simulate_commitment(c_0,s_0)
-T_1 &lt;-right.simulate_commitment(c_1,s_1)
-return T_vec =(T_0,T_1)
+T_0 &lt;- left.simulate_commitment(c_0, s_0)
+T_1 &lt;- right.simulate_commitment(c_1, s_1)
+return T_vec = (T_0, T_1)
 </pre><a href="#section-6.2-17" class="pilcrow">¶</a>
 </div>
 </section>

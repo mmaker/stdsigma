@@ -184,7 +184,7 @@ Table of Contents
 
    In the following, we describe a generic interface for Sigma
    protocols.  Such protocols can be used to prove that, for some binary
-   relation R and a public value Y, a witness w such that (Y,w) is in R
+   relation R and a public value Y, a witness w such that (Y, w) is in R
    is known.  Basic statements include proofs of knowledge of a secret
    key, openings of commitments, and more in general of representations.
    The type of these elements depends on the specific relation being
@@ -378,7 +378,7 @@ Table of Contents
 
    SigmaProtocol.batchable_verify(proof)
 
-   (T,s) = Deserialize(proof)
+   (T, s) = Deserialize(proof)
    c <- SigmaProtocol.challenge(T)
    return SigmaProtocol.verifier(T, c, s)
 
@@ -398,7 +398,7 @@ Table of Contents
 
    (T, pstate) <- SigmaProtocol.prover_commit(w)
    c <- SigmaProtocol.challenge(T)
-   s_vec <- SigmaProtocol.prover_response(pstate,c)
+   s_vec <- SigmaProtocol.prover_response(pstate, c)
    return (Serialize(c), Serialize(s))
 
    The commitment T is not provided within a short proof since it can be
@@ -483,7 +483,7 @@ Table of Contents
       <-$- GF(p);
 
    *  a deterministic sub-procedure s = Serialize(P), taking as input a
-      group element $P in GG$ and returning a fixed-length sequence of
+      group element P in GG and returning a fixed-length sequence of
       bits.  For elliptic curve groups, Serialize must provide a
       compressed representation of the _affine_ representation, such as
       the x-coordinate of P and one bit determining the sign of Y.
@@ -503,105 +503,110 @@ Table of Contents
    be expressed as statements over group homomorphisms.  For an in-depth
    discussion of the underlying theory we refer to Cramer [@cramer97].
 
-   *Definition 1*. For two groups $GG_1,GG_2$, a function $\varphi:GG_1
-   -> GG_2:x\mapsto\varphi(x)$ is a _(group) homomorphism_, if and only
-   if for all $a,b in GG_1$ it holds that
-   $\varphi(a+b)=\varphi(a)+\varphi(b)$. :::
+   *Definition 1*. For two groups GG_1, GG_2, a function \varphi:GG_1 ->
+   GG_2:x\mapsto\varphi(x) is a _(group) homomorphism_, if and only if
+   for all a, b in GG_1 it holds that
+   \varphi(a+b)=\varphi(a)+\varphi(b). :::
 
    Readers not familiar with the notation of group homomorphism may
-   think of $\varphi$ as a linear function from n elements into m
+   think of \varphi as a linear function from n elements into m
    elements.
 
    ::: example Discrete logarithm equality phi_DLEQ Looking at the
    relation R_DLEQ, the relevant homomorphism is given by: f_DLEQ :
-   GF(p) -> GG^2 : w\mapsto (wG,wH) If equality of discrete logarithms
+   GF(p) -> GG^2 : w\mapsto (wG, wH) If equality of discrete logarithms
    within _different_ groups of the same prime order p is to be proven,
    the homomorphism to be considered would be: f_DLEQ' : GF(p) ->
-   GG_1\timesGG_2 : w\mapsto (wG,wH) where G and H would now be
-   generators for $GG_1$ and $GG_2$, respectively.  All the techniques
+   GG_1\timesGG_2 : w\mapsto (wG, wH) where G and H would now be
+   generators for GG_1 and GG_2, respectively.  All the techniques
    discussed in the remainder of this spec equally apply to both cases.
    :::
 
-   ::: example Representation phi_REP Looking at the relation ${R_rep}$,
-   the relevant homomorphism is given by: φ_rep : GF(p)^2 −> GG :
-   (w_1,w_2)↦ w_1 G + w_2 H. :::
+   ::: example Representation phi_REP Looking at the relation {R_rep},
+   the relevant homomorphism is given by:
+
+   \varphi_rep : GF(p)^2 -> GG : (w_1, w_2)\mapsto w_1 G + w_2 H.
+
+   :::
 
    We provide a generic template for all Sigma protocols for statements
    of the following form over DLOG groups:
 
-   R_dl = { ((Y_1, ... ,Y_m),(w_1, ... ,w_n)) in GG^m * GF(p)^n: (Y_1,
-   ... ,Y_m)=\varphi(w_1, ... ,w_n) }
+   R_dl = { ((Y_1, ... , Y_m), (w_1, ... , w_n)) in GG^m * GF(p)^n:
+   (Y_1, ... , Y_m)=\varphi(w_1, ... , w_n) }
 
-   where $\varphi:GF(p)^n -> GG^m$ is a group homomorphism.
+   where \varphi:GF(p)^n -> GG^m is a group homomorphism.
 
    ::: remark Selective disclosure of witnesses Note that in the
    following descriptions, all witnesses are assumed to be kept secret,
    i.e., none of them is disclosed to the verifier.  In case it is
-   required to disclose $w_j$, as is the case, e.g., in the context of
+   required to disclose w_j, as is the case, e.g., in the context of
    attribute-based credential systems, the relation to be proven can be
    rewritten as follows:
 
-   R_dl'= { \begin{array}{r} ((Y_1', ... ,Y_m')),(w_1, ...
-   ,w_{j-1},w_{j+1}, ... ,w_n)) in GG^m \times GF(p)^{n-1}: ~~~~~~~~~~~~
-   (Y_1', ... ,Y_m')=\psi(w_1, ... ,w_{j-1},w_{j+1}, ... ,w_n)
-   \end{array} }where\begin{aligned} (Y_1', ... ,Y_m') &:= (Y_1, ...
-   ,Y_m)-\varphi(0, ... ,0,w_j,0, ... ,0)\text{ and}
-   \psi(w_1, ... ,w_{j-1},w_{j+1}, ... ,w_n) &:= \varphi(w_1, ...
-   ,w_{j-1},0,w_{j+1}, ... ,w_n).
+   R_dl'= { \begin{array}{r} ((Y_1', ... , Y_m')), (w_1, ... , w_{j-1},
+   w_{j+1}, ... , w_n)) in GG^m \times GF(p)^{n-1}: ~~~~~~~~~~~~
+   (Y_1', ... , Y_m')=\psi(w_1, ... , w_{j-1}, w_{j+1}, ... , w_n)
+   \end{array} }
+
+   where
+
+(Y_1', ... , Y_m')                                   &:= (Y_1, ... , Y_m)-\varphi(0, ... , 0, w_j, 0, ... , 0)\text{ and}\\
+  \psi(w_1, ... , w_{j-1}, w_{j+1}, ... , w_n) &:= \varphi(w_1, ... , w_{j-1}, 0, w_{j+1}, ... , w_n).
 
    However, the following _defines neither the morphism nor the label
    associated to the protocol_. These will be defined later in the
    specific protocols.
 
-   *  DlogTemplate.new(ctx, Y_vec) internally stores $Y_vec$ and ctx.
+   *  DlogTemplate.new(ctx, Y_vec) internally stores Y_vec and ctx.
 
    -
 
    (T_vec, pstate) <- DlogTemplate.prover_commit(w_vec)
 
-   sample random elements r_1, ... ,r_n <- GF(p)
-   T_vec =(T_1, ... ,T_m)=\varphi(r_1, ... ,r_n)
-   pstate = (r_1, ... ,r_n)
+   sample random elements r_1, ... , r_n <- GF(p)
+   T_vec =(T_1, ... , T_m)=\varphi(r_1, ... , r_n)
+   pstate = (r_1, ... , r_n)
    return (T_vec, pstate)
 
    -
 
-   s_vec <- DlogTemplate.prover_response(pstate,c):
-   (r_1, ... ,r_n)= pstate
-   (w_1, ... ,w_n)= w_vec
+   s_vec <- DlogTemplate.prover_response(pstate, c):
+   (r_1, ... , r_n)= pstate
+   (w_1, ... , w_n)= w_vec
    e = FromBytes(c)
-   for i = 1, ... ,n$: $s_i = r_i+e w_i
-   return s_vec = (s_1, ... ,s_n)
+   for i = 1, ... , n`: `s_i = r_i+e w_i
+   return s_vec = (s_1, ... , s_n)
 
    *  DlogTemplate.label() return morphism_label().
 
    -
 
-   DlogTemplate.verifier(T_vec,c,s_vec)
+   DlogTemplate.verifier(T_vec, c, s_vec)
 
    (s_1, ... , s_n) = s_vec
    (T_1, ... , T_m) = T_vec
    e = FromBytes(c)
-   for `i =1, ... ,n`: check $s_i in GF(p)
-   for $j =1, ... ,m$: check $T_j in GG
-   return ((T_1 + eY_1, ... ,T_m + eY_m) = \varphi(s_1, ... ,s_n))
+   for `i =1, ... , n`: check $s_i in GF(p)
+   for `j =1, ... , m`: check $T_j in GG
+   return ((T_1 + eY_1, ... , T_m + eY_m) = \varphi(s_1, ... , s_n))
 
    -
 
    s_vec = DlogTemplate.simulate_response()
 
-   sample random elements $s_1, ... ,s_n <-$-GF(p)$
-   return $(s_1, ... , s_n)$
+   sample random elements `s_1, ... , s_n <-`-GF(p)$
+   return `(s_1, ... , s_n)`
 
    -
 
    T_vec <- DlogTemplate.simulate_commitment(c, s_vec)
 
-   (Y_1, ... ,Y_m) = Y_vec
-   (s_1, ... ,s_n) = s_vec
+   (Y_1, ... , Y_m) = Y_vec
+   (s_1, ... , s_n) = s_vec
    e = FromBytes(c)
-   (T_1, ... ,T_m) = \varphi(s_1, ... ,s_n) - e\cdot(Y_1, ... ,Y_m)
-   return T_vec = (s_1, ... ,s_n)
+   (T_1, ... , T_m) = \varphi(s_1, ... , s_n) - e*(Y_1, ... , Y_m)
+   return T_vec = (s_1, ... , s_n)
 
 3.3.  Linear relations
 
@@ -611,52 +616,61 @@ Table of Contents
    Specifically, they require to prove relations like the following:
 
 R_lin = {
-  ((Y_1, ... ,Y_m),(w_1, ... ,w_n)) :
-  \begin{array}{c} (Y_1, ... ,Y_m)=\varphi(w_1, ... ,w_n) \\
-              A\cdot(w_1, ... ,w_n)^ in tercal = (b_1, ... ,b_k)^ in tercal\end{array}},
+  ((Y_1, ... , Y_m), (w_1, ... , w_n)) :
+  \begin{array}{c} (Y_1, ... , Y_m)=\varphi(w_1, ... , w_n) \\
+              A*(w_1, ... , w_n)^ in tercal = (b_1, ... , b_k)^ in tercal\end{array}},
 
-   where the matrix $A in GF(p)^{k\times n}$ and vector $(b_1, ... ,b_k)
-   in GF(p)^k$ specify the system of linear equations.
+   where the matrix A in GF(p)^{k\times n} and vector (b_1, ... , b_k)
+   in GF(p)^k specify the system of linear equations.
 
    In the following, we sketch how such relations can be translated into
    relations of the form discussed in (#sec:basic_sigma).  We assume
-   that A is of the following form: A = łeft(\begin{array}{cccccccc}
-   a_{11} & ...  & a_{1k} & 1 & 0 & 0 & ...  & 0\\ a_{21} & ...  &
-   a_{2k} & 0 & 1 & 0 & ...  & ⋮\\ ⋮ & & ⋮ & ⋮ & & ⋮& & 0\\ ⋮ & & ⋮ & ⋮
-   & & 0 & 1 & 0\\ a_{k1} & ...  & a_{kk} & 0 & ...  & ... & 0 & 1\\
-   \end{array}\right) Note that this is without loss of generality.  If
-   the system of linear equations has a different form, the above form
-   can always be achieved using Gaussian elimination [@shoup08
-   Sec. 14.4] and re-ordering of the witnesses.  Note that we only need
-   to consider the case where $k<n$, as otherwise the linear equations
-   would uniquely determine the witnesses, which is not desirable in our
-   context.
+   that A is of the following form:
 
-   The following relation ${R_lin}'$ is now equivalent to that specified
-   by ${R_lin}$:
+A = \left(\begin{array}{cccccccc}
+  a_{11}     & ...       & a_{1k}    & 1         & 0       & 0     & ...    & 0\\
+  a_{21}     & ...       & a_{2k}    & 0         & 1       & 0     & ...    & \vdots\\
+  \vdots     &             & \vdots    & \vdots    &         & \vdots&          & 0\\
+  \vdots     &             & \vdots    & \vdots    &         & 0     & 1        & 0\\
+  a_{k1}     & ...       & a_{kk}    & 0         & ...   & ... & 0        & 1\\
+\end{array}\right)
 
-   R_lin'=\set{((Y_1, ... ,Y_m),(w_1, ... ,w_{n-k})) : (Y_1, ...
-   ,Y_m)=\psi(w_1, ... ,w_{n-k})}where\begin{aligned} \psi(w_1, ...
-   ,w_{n-k}) &:= \varphi(w_1, ... ,w_{n-k},-\sum_{i =1}^{n-k}a_{1i}w_i,
-   ... ,-\sum_{i = 1}^{n-k}a_{ki}w_i)\text{ and}
-   (Y_1', ... ,Y_m') &:= (Y_1, ... ,Y_m) - \varphi(0, ... ,0,b_1, ...
-   ,b_k). \end{aligned}$$
+   Note that this is without loss of generality.  If the system of
+   linear equations has a different form, the above form can always be
+   achieved using Gaussian elimination [@shoup08 Sec. 14.4] and re-
+   ordering of the witnesses.  Note that we only need to consider the
+   case where k<n, as otherwise the linear equations would uniquely
+   determine the witnesses, which is not desirable in our context.
+
+   The following relation {R_lin}' is now equivalent to that specified
+   by {R_lin}:
+
+   R_lin'=\set{((Y_1, ... , Y_m), (w_1, ... , w_{n-k})) : (Y_1, ... ,
+   Y_m)=\psi(w_1, ... , w_{n-k})}
+
+   where
+
+   \begin{aligned} \psi(w_1, ... , w_{n-k}) &:= \varphi(w_1, ... ,
+   w_{n-k}, -\sum_{i =1}^{n-k}a_{1i}w_i, ... , -\sum_{i =
+   1}^{n-k}a_{ki}w_i)\text{ and}
+   (Y_1', ... , Y_m') &:= (Y_1, ... , Y_m) - \varphi(0, ... , 0, b_1,
+   ... , b_k).  \end{aligned}
 
 3.4.  Examples
 
    Let GG be a group over an elliptic curve with prime order p.  Denote
-   with $G in GG$ a generator of GG.
+   with G in GG a generator of GG.
 
 3.4.1.  Schnorr signatures
 
-   Schnorr signatures prove knowledge of the discrete logarithm $w in
-   GF(p)$ of a point $Y = wG$ in base G.
+   Schnorr signatures prove knowledge of the discrete logarithm w in
+   GF(p) of a point Y = wG in base G.
 
    *  \varphi:GF(p) -> GG:w -> wG
 
    *  Schnorr.morphism_label(): return:
-      $$\hash(\texttt{\textquotesingle{}schnorrsig\textquotesingle},
-      curve \mathbf{\mid}~Serialize(G) ,~Serialize(Y))$
+
+      ???
 
    For a description of this proof goal in the general case of residue
    classes, we also refer to [@zkproof-reference 1.4.1].
@@ -664,32 +678,31 @@ R_lin = {
 3.4.2.  Discrete logarithm equality
 
    So-called DLEQ proofs prove equality of the discrete logarithm, that
-   is: $Y_1 = wG$ and $Y_2 = wH$.
+   is: Y_1 = wG and Y_2 = wH.
 
-   *  $\varphi:GF(p) -> GG^2:w\mapsto (wG,wH)$
+   *  \varphi:GF(p) -> GG^2:w\mapsto (wG, wH)
 
-   *  Dleq.morphism_label(): return $$\hash(\texttt{\textquotesingle{}dl
-      eq\textquotesingle},~{curve}\mathbf{\mid}~Serialize(G)
-      ,~Serialize(H) ,~Serialize(Y_1) ,~Serialize(Y_2))$
+   *  Dleq.morphism_label(): return
+
+      ??
 
 3.4.3.  Diffie-Hellman
 
    Let GG be a group over an elliptic curve with prime order p.  Proving
    knowledge of the exponents of a valid Diffie-Hellman triple means
-   proving knowledge of $w_1,w_2 in GF(p)$ such that $Y_1= w_1G$, $Y_2=
-   w_2G$, and $Y_3= w_1 w_2 G$. The mapping $GF(p)^2 ->
-   GG^3:(w_1,w_2)\mapsto (w_1G,w_2G,w_1w_2G)$ is not a homomorphism, and
+   proving knowledge of w_1, w_2 in GF(p) such that Y_1= w_1G, Y_2=
+   w_2G, and Y_3= w_1 w_2 G.  The mapping GF(p)^2 -> GG^3:(w_1,
+   w_2)\mapsto (w_1G, w_2G, w_1w_2G) is not a homomorphism, and
    consequently the basic protocol presented before cannot be deployed
    directly.  However, the required multiplicative relation can be
-   proven by observing that the proof goal is equivalent to $Y_1= w_1G$,
-   $Y_2= w_2G$, and $Y_3= w_2Y_1$, leading the homomorphism
+   proven by observing that the proof goal is equivalent to Y_1= w_1G,
+   Y_2= w_2G, and Y_3= w_2Y_1, leading the homomorphism
 
-   *  $\varphi:GF(p)^2 -> GG^3:(w_1,w_2)\mapsto(w_1G,w_2G,w_2Y_1)$
+   *  \varphi:GF(p)^2 -> GG^3:(w_1, w_2)\mapsto(w_1G, w_2G, w_2Y_1)
 
    *  Dh.morphism_label() return:
-      $$\hash(\texttt{\textquotesingle{}diffie-
-      hellman\textquotesingle},~{curve}\mathbf{\mid}~Serialize(G)
-      ,~Serialize(Y_1) ,~Serialize(Y_2))$
+
+      ??
 
    As shown in this example, and in contrast to linear relations,
    multiplicative relations among witnesses typically require a
@@ -699,47 +712,47 @@ R_lin = {
 
    Let GG be a group over an elliptic curve of prime order p, and let
    G_1, ... , G_m be generators of GG.  Proving knowledge of a valid
-   opening of a Pedersen commitment means proving knowledge of w_1,w_2,
+   opening of a Pedersen commitment means proving knowledge of w_1, w_2,
    ... , w_m in GF(p) such that Y = w_1G_1 + w_2G_2 + ... + w_m G_m.
 
-   *  $\varphi:GF(p)^m -> GG:(w_1,w_2, ... , w_m)\mapsto \sum_i w_iG_i$
+   *  \varphi:GF(p)^m -> GG:(w_1, w_2, ... , w_m)\mapsto \sum_i w_iG_i
 
-   *  Rep.morphism_label() returns $$\hash(\texttt{\textquotesingle{}rep
-      resentation\textquotesingle},~{curve}\mathbf{\mid}~Serialize(G_1)
-      ,~\cdots ,~Serialize(G_m) ,~Serialize(Y))$
+   *  Rep.morphism_label() returns
+
+      \hash(\texttt{\textquotesingle{}representation\textquotesingle},
+      ~{curve}\mathbf{\mid}~Serialize(G_1) , ~*s , ~Serialize(G_m) ,
+      ~Serialize(Y))$
 
    ::: example Range proofs via bit decomposition Let GG be a cyclic
    group of prime order p, and let G and H be generators of GG, and let
-   $\ell$ be a non-negative integer satisfying $\ell<\log_2 p$. Consider
-   the following relation: {R_range} = \set{łeft(Y,(w_1,w_2))\right)~:~Y
-   = w_1 G +w_2 H ~łand~ w_1 in [0,2^ℓ)}. Multiple techniques for
-   proving that a secret witness lies within a certain range, cf. Morais
-   et al. [@range-proof-survey] for a survey.  We will use the so-called
-   _bit decomposition_ approach.
+   \ell be a non-negative integer satisfying \ell<\log_2 p.  Consider
+   the following relation:
 
-   To do so, the prover computes $w_{1,i} in \set{0,1}$ for $i =0, ...
-   ,\ell-1$ such that $w_1=\sum_{i =0}^{\ell-1}2^iw_{1,i}$, and computes
-   commitments to those individual bits, i.e., $Y_i = w_{1,i}G+w_{2,i}H$
-   for $w_{2,i} <-$- GF(p)$. Furthermore, it sets $w^*= w_2-\sum_{i
-   =0}^{\ell-1}2^iw_{2,i}$.
+   R_range = \set{\left(Y, (w_1, w_2))\right)~:~Y = w_1 G +w_2 H ~\land~
+   w_1 in [0, 2^\ell)
+
+   Multiple techniques for proving that a secret witness lies within a
+   certain range, cf. Morais et al. [@range-proof-survey] for a survey.
+   We will use the so-called _bit decomposition_ approach.
+
+   To do so, the prover computes w_{1, i} in \set{0, 1} for i =0, ... ,
+   \ell-1 such that w_1=\sum_{i =0}^{\ell-1}2^iw_{1, i}, and computes
+   commitments to those individual bits, i.e., Y_i = w_{1, i}G+w_{2, i}H
+   for w_{2, i} <-- GF(p)$. Furthermore, it sets w^*= w_2-\sum_{i
+   =0}^{\ell-1}2^iw_{2, i}.
 
    Assuming that the discrete logarithm problem is hard in GG, the above
    relation is now equivalent to the following relation:
-   $$\begin{aligned} {R_range}' = \bigg{\left((Y,(Y_i)_{i =0}^{\ell-
-   1}),(w_1,w_2,(w_{2,i})_{i =0}^{\ell-1}),w^*)\right)~:~ Y = w_1 G +w_2
-   H ~\land~
-   Y-\sum_{i =0}^{\ell-1} 2^iY_i = w^* H ~\land~
-   \bigwedge_{i =0}^{\ell-1} \left(Y_i = w_{2,i}H ~\lor~ Y_i-G =
-   w_{2,i}H\right)\bigg}.
 
-   \end{aligned}$$
+  {R_range}' = \bigg\{\left((Y, (Y_i)_{i =0}^{\ell-1}), (w_1, w_2, (w_{2, i})_{i =0}^{\ell-1}), w^*)\right)~:~         Y = w_1 G +w_2 H ~\land~ \\
+    Y-\sum_{i =0}^{\ell-1} 2^iY_i = w^* H ~\land~  \\
+    \bigwedge_{i =0}^{\ell-1} \left(Y_i = w_{2, i}H ~\lor~ Y_i-G = w_{2, i}H\right)\bigg\}.
 
    It can now be seen that the above ensures knowledge of the witnesses
-   $w_1$ hidden within Y.  Furthermore, we guarantee that the values
-   hidden within $Y_i$ correctly add up to $w_1$, i.e., that
-   $w_1-\sum_{i =0}^{\ell-1}2^iw_{1,i}=0$. Finally, the two clauses
-   ensure that each $Y_i$ is a commitment to either 0 or 1, thus
-   implying the bound on $w_1$.
+   w_1 hidden within Y.  Furthermore, we guarantee that the values
+   hidden within Y_i correctly add up to w_1, i.e., that w_1-\sum_{i
+   =0}^{\ell-1}2^iw_{1, i}=0.  Finally, the two clauses ensure that each
+   Y_i is a commitment to either 0 or 1, thus implying the bound on w_1.
 
    The different clauses can finally be composed using nested protocol
    compositions from 2.5 (Section 6). :::
@@ -747,25 +760,31 @@ R_lin = {
 3.5.  Batch verification
 
    The batchable form can take advantage of the following fact.  Given
-   $\ell$ verification equations of the form: T_i + c_i Y_i = ∑_j s_j
-   G_{i,j} for $i =1, ... ,\ell$, the verifier can sample a random
-   vector of coefficients $a_vec in GF(p)^\ell$ and instead test:
-   łeft(∑_{i =1}^{ℓ} a_i T_i\right) + łeft(∑_{i =1}^{ℓ} a_i ⋅ c_i Y_i
-   \right) = łeft(∑_{i =1}^{ℓ} a_i ⋅ ∑_j s_j G_{i,j}\right).  If the
-   matrix $G_{i, j}$ of generators has identical rows, by linearity the
-   right-hand side can be computed as a single scalar product.  If the
-   statements $Y_i$'s have identical rows, by linearity the second term
-   in the equation can be computed as a single scalar product.
+   \ell verification equations of the form:
+
+   T_i + c_i Y_i = \sum_j s_j G_{i, j}
+
+   for i =1, ... , \ell, the verifier can sample a random vector of
+   coefficients a_vec in GF(p)^\ell and instead test:
+
+   \left(\sum_{i =1}^{\ell} a_i T_i\right) + \left(\sum_{i =1}^{\ell}
+   a_i * c_i Y_i \right) = \left(\sum_{i =1}^{\ell} a_i * \sum_j s_j
+   G_{i, j}\right).
+
+   If the matrix G_{i, j} of generators has identical rows, by linearity
+   the right-hand side can be computed as a single scalar product.  If
+   the statements Y_i's have identical rows, by linearity the second
+   term in the equation can be computed as a single scalar product.
 
    In any case, the test can be efficiently implemented as a single
    multi-scalar multiplication, minimizing the number of group
-   operations needed: łeft(∑_{i =1}^{ℓ} a_i T_i\right) + łeft(∑_{i
-   =1}^{ℓ} (a_i ⋅ c_i) Y_i \right) + łeft(∑_{i =1}^{ℓ}∑_j (−a_i ⋅ s_j)
-   G_{i,j}\right) = 0.
+   operations needed:
 
-   The random vector $a_vec$ can be _deterministically_ generated by
-   fixing $a_1 = 1$ and setting $(a_2, ... , a_{\ell}) =\prg(H(c,
-   s_vec))$ [@bip-schnorr].
+\left(\sum_{i =1}^{\ell} a_i T_i\right) + \left(\sum_{i =1}^{\ell} (a_i *  c_i) Y_i \right) + \left(\sum_{i =1}^{\ell}\sum_j (-a_i *  s_j) G_{i, j}\right) = 0
+
+   The random vector a_vec can be _deterministically_ generated by
+   fixing a_1 = 1 and setting (a_2, ... , a_{\ell}) =\prg(H(c, s_vec)) 
+   [@bip-schnorr].
 
 4.  Composing the same relation
 
@@ -818,14 +837,13 @@ R_lin = {
    a Sigma protocol for the following relation:
 
    R_and = {
-     ((Y_0,Y_1),(w_0,w_1) : (Y_0,w_0) in R_0 AND (Y_1,w_1) in R_1
+     ((Y_0, Y_1), (w_0, w_1) : (Y_0, w_0) in R_0 AND (Y_1, w_1) in R_1
    }
 
    For the rest of this section, the witness w for the Sigma protocol
-   will now be a pair $(w_0, w_1)$ of witnesses, and the associated
-   statement Y will be a pair $(Y_0, Y_1)$ of statements, where $w_0$ is
-   the witness for the statement $Y_0$, and $w_1$ is the witness for
-   $Y_1$.
+   will now be a pair (w_0, w_1) of witnesses, and the associated
+   statement Y will be a pair (Y_0, Y_1) of statements, where w_0 is the
+   witness for the statement Y_0, and w_1 is the witness for Y_1.
 
    Intuitively, the AND composition simply runs the instances of the
    different protocols to be composed in parallel, using the same
@@ -843,33 +861,34 @@ R_lin = {
    -
 
    (T_vec, pstate) <- AndComposition.prover_commit(w_vec)
-   (w_0,w_1) = w_vec
+   (w_0, w_1) = w_vec
    (T_0, pstate_0) <- left.prover_commit(w_0)
    (T_1, pstate_1) <- right.prover_commit(w_1)
-   return (T_vec,pstate) = ((T_0,  T_1),(pstate_0, pstate_1))
+   return (T_vec, pstate) = ((T_0,  T_1), (pstate_0, pstate_1))
 
    -
 
    s_vec <- AndComposition.prover_response(pstate, c)
 
-   (pstate_0,pstate_1)= pstate`
-   s_0 <- left.prover_response(pstate_0, c)`
-   s_1 <- right.prover_response(pstate_1, c)`
-   return s_vec = (s_0,s_1)
+   (pstate_0, pstate_1)= pstate
+   s_0 <- left.prover_response(pstate_0, c)
+   s_1 <- right.prover_response(pstate_1, c)
+   return s_vec = (s_0, s_1)
 
    -
 
    AndComposition.verifier(T_vec, c, s_vec)
 
-   (s_0, s_1)= s_vec$.
-   return (left.verifier(T_0,c, s_0) and right.verifier(T_1,c, s_1))
+   (s_0, s_1)= s_vec
+   return (left.verifier(T_0, c, s_0) and right.verifier(T_1, c, s_1))
 
    -
 
    AndComposition.label() is computed as:
-   $H((\texttt{\textquotesingle{}and-composition\textquotesingle}\mathbf
-   {\mid}~left.label(),~right.label())$ The supported hash functions are
-   described in [@draft-orru-zkproof-fs].
+
+  H((\texttt{\textquotesingle{}and-composition\textquotesingle}\mathbf{\mid}~`left.label()` , ~`right.label()`)
+
+The supported hash functions are described in [@draft-orru-zkproof-fs].
 
    -
 
@@ -877,15 +896,15 @@ R_lin = {
 
    s_0 <- left.simulate_response()
    s_1 <- right.simulate_response()
-   return s_vec = (s_0,s_1)
+   return s_vec = (s_0, s_1)
 
    -
 
    AndComposition.simulate_commitment(c, s_vec)
 
-   (s_0,s_1) = s_vec
-   T_0 <- left.simulate_commitment(c,s_0)
-   T_1 <- right.simulate_commitment(c,s_1)
+   (s_0, s_1) = s_vec
+   T_0 <- left.simulate_commitment(c, s_0)
+   T_1 <- right.simulate_commitment(c, s_1)
    return T_vec = (T_0, T_1)
 
    ::: warning Witness equality Note that the AND-composition defined in
@@ -904,16 +923,16 @@ R_lin = {
    relation:
 
    R_or = {
-       ((Y_0,Y_1),(w_0,w_1) :
-       (Y_0,w_0) in  R_0 OR (Y_1,w_1) in R_1
+       ((Y_0, Y_1), (w_0, w_1) :
+       (Y_0, w_0) in  R_0 OR (Y_1, w_1) in R_1
    }
 
-   The statement Y is the pair $(Y_0, Y_1)$ of the composing statements,
-   and the witness w is the pair $(w_0, w_1)$ of the witnesses for the
-   respective relation.  One of the witness can be set to
-   $\mathsf{None}$. In the following protocol specification, let j be
-   such that $w_j$ is known to the prover, whereas without loss of
-   generality $w_{1-j}$ is assumed to be unknown to the prover.
+   The statement Y is the pair (Y_0, Y_1) of the composing statements,
+   and the witness w is the pair (w_0, w_1) of the witnesses for the
+   respective relation.  One of the witness can be set to \mathsf{None}.
+   In the following protocol specification, let j be such that w_j is
+   known to the prover, whereas without loss of generality w_{1-j} is
+   assumed to be unknown to the prover.
 
    On a high level, the protocol works as follows.  Using the simulator,
    the prover first simulates a transcript for the unknown witness
@@ -935,56 +954,56 @@ R_lin = {
 
    -
 
-(T_vec, pstate) <- OrComposition.prover_commit(w_vec)
+OrComposition.prover_commit(w_vec)
 
 Prover = [left, right]
-(w_0,w_1)= w_vec`, and let $j in \bin$ be the first index for which $w[j]!= None$
-(T_j,`pstate`_j)<-Prover[j].prover_commit(Y_j,w_j)
-s_{1-j}<-Prover`[1-j].`simulate_response()
-choose a random $c_{1-j}$ in $\mathcal{C}$
-T_{1-j}<- Prover[1-j].simulate_commitment(c_{1-j},s_{1-j})
-return `(T_vec, pstate) =((T_0,T_1),(pstate[j],c_{1-j},s_{1-j}))
+(w_0, w_1)= w_vec, and let `j in \bin` be the first index for which `w[j]!= None`
+(T[j], pstate[j]) <- Prover[j].prover_commit(Y_j, w_j)
+s[1-j] <- Prover[1-j].simulate_response()
+choose a random `c_{1-j}` in `\mathcal{C}`
+T[1-j]<- Prover[1-j].simulate_commitment(c_{1-j}, s_{1-j})
+return (T_vec, pstate) = ((T_0, T_1), (pstate[j], c_{1-j}, s_{1-j}))
 
    -
 
-   s_vec <- OrComposition.prover_response(pstate, c)
+   OrComposition.prover_response(pstate, c)
 
-   (pstate[j],c[1-j],s_[1-j])= pstate
+   (pstate[j], c[1-j], s_[1-j])= pstate
    c[j]= c XOR c[1-j]
    s[j] <- Prover[j].prover_response(pstate[j], c[j])
-   return s_vec = (s_0,s_1, c_0)
+   return s_vec = (s_0, s_1, c_0)
 
    -
 
-   OrComposition.verifier(T_vec, c, s_vec)
+ OrComposition.verifier(T_vec, c, s_vec)
 
-   (s_0, s_1, c_0) = s_vec
-   c_1= c\oplus c_0
-   return (left.verifier(T_0,c_0,s_0) and right.verifier(T_1,c_1,s_1))
+ (s_0, s_1, c_0) = s_vec
+ c_1= c\oplus c_0
+ return (left.verifier(T_0, c_0, s_0) and right.verifier(T_1, c_1, s_1))
 
-   *  OrComposition.label() is computed as:
-      $H((\texttt{\textquotesingle{}or-composition\textquotesingle}\math
-      bf{\mid}~left.label(),~right.label())$
+*  OrComposition.label() is computed as:
+
+H((\texttt{\textquotesingle{}or-composition\textquotesingle}\mathbf{\mid}~`left.label()` , ~`right.label()`)
 
    -
 
-   s_vec <- OrComposition.simulate_response()
+   sOrComposition.simulate_response()
 
-   (Y_0,Y_1)= Y_vec$.
-   s_0<-`left.simulate_response()`
-   s_1<-`right.simulate_response()`
-   choose a random $c_0$ in $\mathcal{C}$.
-   return $s_vec=(s_0,s_1,c_0)$.
+   (Y_0, Y_1) = Y_vec
+   s_0 <- left.simulate_response()
+   s_1 <- right.simulate_response()
+   choose a random `c_0` in $\mathcal{C}
+   return s_vec = (s_0, s_1, c_0)
 
    -
 
    T_vec <- OrComposition.simulate_commitment(c, s_vec)
 
-   (s_0,s_1,c_0) = s_vec
+   (s_0, s_1, c_0) = s_vec
    c_1 = c XOR c_0
-   T_0 <-left.simulate_commitment(c_0,s_0)
-   T_1 <-right.simulate_commitment(c_1,s_1)
-   return T_vec =(T_0,T_1)
+   T_0 <- left.simulate_commitment(c_0, s_0)
+   T_1 <- right.simulate_commitment(c_1, s_1)
+   return T_vec = (T_0, T_1)
 
 7.  Additional proof types
 
