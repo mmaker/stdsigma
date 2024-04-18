@@ -90,13 +90,14 @@ Table of Contents
        3.4.3.  Diffie-Hellman
        3.4.4.  Representation
      3.5.  Batch verification
-   4.  Encoding the statement
-   5.  Composition of Sigma Protocols
-     5.1.  AND Composition
-     5.2.  OR Composition
-   6.  Additional proof types
-   7.  Test vectors
-   8.  Acknowledgments
+   4.  Composing the same relation
+   5.  Encoding the statement
+   6.  Composition of Sigma Protocols
+     6.1.  AND Composition
+     6.2.  OR Composition
+   7.  Additional proof types
+   8.  Test vectors
+   9.  Acknowledgments
    Authors' Addresses
 
 1.  Introduction
@@ -548,48 +549,59 @@ Table of Contents
    \psi(w_1, ... ,w_{j-1},w_{j+1}, ... ,w_n) &:= \varphi(w_1, ...
    ,w_{j-1},0,w_{j+1}, ... ,w_n).
 
-   :::
-
    However, the following _defines neither the morphism nor the label
    associated to the protocol_. These will be defined later in the
    specific protocols.
 
    *  DlogTemplate.new(ctx, Y_vec) internally stores $Y_vec$ and ctx.
 
-   *  []{#item:basic:p1 label ="item:basic:p1"} (T_vec, pstate) <-
-      DlogTemplate.prover_commit(w_vec) consists of the following steps:
+   -
 
-      sample random elements r_1, ... ,r_n <- GF(p) T_vec =(T_1, ...
-      ,T_m)=\varphi(r_1, ... ,r_n) pstate = (r_1, ... ,r_n) return
-      (T_vec, pstate)
+   (T_vec, pstate) <- DlogTemplate.prover_commit(w_vec)
 
-   *  []{#item:basic:p2 label ="item:basic:p2"}
+   sample random elements r_1, ... ,r_n <- GF(p)
+   T_vec =(T_1, ... ,T_m)=\varphi(r_1, ... ,r_n)
+   pstate = (r_1, ... ,r_n)
+   return (T_vec, pstate)
 
-      s_vec <- DlogTemplate.prover_response(pstate,c): (r_1, ... ,r_n)=
-      pstate (w_1, ... ,w_n)= w_vec e = FromBytes(c) for i = 1, ... ,n$:
-      $s_i = r_i+e w_i return s_vec = (s_1, ... ,s_n)
+   -
+
+   s_vec <- DlogTemplate.prover_response(pstate,c):
+   (r_1, ... ,r_n)= pstate
+   (w_1, ... ,w_n)= w_vec
+   e = FromBytes(c)
+   for i = 1, ... ,n$: $s_i = r_i+e w_i
+   return s_vec = (s_1, ... ,s_n)
 
    *  DlogTemplate.label() return morphism_label().
 
-   *  []{#item:basic:v label ="item:basic:v"}
-      DlogTemplate.verifier(T_vec,c,s_vec) proceeds as follows:
+   -
 
-      (s_1, ... , s_n) = s_vec (T_1, ... , T_m) = T_vec e = FromBytes(c)
-      for i =1, ... ,n: check $s_i in GF(p) for $j =1, ... ,m$: check
-      $T_j in GG return ((T_1 + eY_1, ... ,T_m + eY_m) = \varphi(s_1,
-      ... ,s_n))
+   DlogTemplate.verifier(T_vec,c,s_vec)
 
-   *  s_vec = DlogTemplate.simulate_response():
+   (s_1, ... , s_n) = s_vec
+   (T_1, ... , T_m) = T_vec
+   e = FromBytes(c)
+   for `i =1, ... ,n`: check $s_i in GF(p)
+   for $j =1, ... ,m$: check $T_j in GG
+   return ((T_1 + eY_1, ... ,T_m + eY_m) = \varphi(s_1, ... ,s_n))
 
-      sample random elements $s_1, ... ,s_n <-$-GF(p)$ return $(s_1, ...
-      , s_n)$
+   -
 
-   *  []{#item:basic:sim label ="item:basic:sim"} $T_vec <-
-      DlogTemplate.simulate_commitment(c, s_vec):
+   s_vec = DlogTemplate.simulate_response()
 
-      (Y_1, ... ,Y_m) = Y_vec (s_1, ... ,s_n) = s_vec e = FromBytes(c)
-      (T_1, ... ,T_m) = \varphi(s_1, ... ,s_n) - e\cdot(Y_1, ... ,Y_m)
-      return T_vec = (s_1, ... ,s_n)
+   sample random elements $s_1, ... ,s_n <-$-GF(p)$
+   return $(s_1, ... , s_n)$
+
+   -
+
+   T_vec <- DlogTemplate.simulate_commitment(c, s_vec)
+
+   (Y_1, ... ,Y_m) = Y_vec
+   (s_1, ... ,s_n) = s_vec
+   e = FromBytes(c)
+   (T_1, ... ,T_m) = \varphi(s_1, ... ,s_n) - e\cdot(Y_1, ... ,Y_m)
+   return T_vec = (s_1, ... ,s_n)
 
 3.3.  Linear relations
 
@@ -607,17 +619,18 @@ R_lin = {
    in GF(p)^k$ specify the system of linear equations.
 
    In the following, we sketch how such relations can be translated into
-   relations of the form discussed in 3.2 (Section 3.2).  We assume that
-   A is of the following form: A = łeft(\begin{array}{cccccccc} a_{11} &
-   ...  & a_{1k} & 1 & 0 & 0 & ...  & 0\\ a_{21} & ...  & a_{2k} & 0 & 1
-   & 0 & ...  & ⋮\\ ⋮ & & ⋮ & ⋮ & & ⋮& & 0\\ ⋮ & & ⋮ & ⋮ & & 0 & 1 & 0\\
-   a_{k1} & ...  & a_{kk} & 0 & ...  & ... & 0 & 1\\ \end{array}\right)
-   Note that this is without loss of generality.  If the system of
-   linear equations has a different form, the above form can always be
-   achieved using Gaussian elimination [@shoup08 Sec. 14.4] and re-
-   ordering of the witnesses.  Note that we only need to consider the
-   case where $k<n$, as otherwise the linear equations would uniquely
-   determine the witnesses, which is not desirable in our context.
+   relations of the form discussed in (#sec:basic_sigma).  We assume
+   that A is of the following form: A = łeft(\begin{array}{cccccccc}
+   a_{11} & ...  & a_{1k} & 1 & 0 & 0 & ...  & 0\\ a_{21} & ...  &
+   a_{2k} & 0 & 1 & 0 & ...  & ⋮\\ ⋮ & & ⋮ & ⋮ & & ⋮& & 0\\ ⋮ & & ⋮ & ⋮
+   & & 0 & 1 & 0\\ a_{k1} & ...  & a_{kk} & 0 & ...  & ... & 0 & 1\\
+   \end{array}\right) Note that this is without loss of generality.  If
+   the system of linear equations has a different form, the above form
+   can always be achieved using Gaussian elimination [@shoup08
+   Sec. 14.4] and re-ordering of the witnesses.  Note that we only need
+   to consider the case where $k<n$, as otherwise the linear equations
+   would uniquely determine the witnesses, which is not desirable in our
+   context.
 
    The following relation ${R_lin}'$ is now equivalent to that specified
    by ${R_lin}$:
@@ -729,7 +742,7 @@ R_lin = {
    implying the bound on $w_1$.
 
    The different clauses can finally be composed using nested protocol
-   compositions from 2.5 (Section 5). :::
+   compositions from 2.5 (Section 6). :::
 
 3.5.  Batch verification
 
@@ -754,7 +767,9 @@ R_lin = {
    fixing $a_1 = 1$ and setting $(a_2, ... , a_{\ell}) =\prg(H(c,
    s_vec))$ [@bip-schnorr].
 
-4.  Encoding the statement
+4.  Composing the same relation
+
+5.  Encoding the statement
 
    Statements in Sigma protocols take the form of a labeled binary tree:
    Statement is either:
@@ -774,7 +789,7 @@ R_lin = {
    *  The zk proof Reference document provides a serialization document
       for r1cs [@zkproof-reference 3.4.2], but there is nothing in it.
 
-5.  Composition of Sigma Protocols
+6.  Composition of Sigma Protocols
 
    Sigma protocols can be composed to prove knowledge of multiple
    independent witnesses (_AND composition_), and for proving knowledge
@@ -795,7 +810,7 @@ R_lin = {
    of many statements) can be achieved by recursively applying
    composition of two protocols.
 
-5.1.  AND Composition
+6.1.  AND Composition
 
    In this section we show how to construct a Sigma protocol proving
    knowledge of multiple independent witnesses, e.g., knowledge of
@@ -880,7 +895,7 @@ R_lin = {
    same.  How to achieve such claims is discussed in
    (#sec:linear_relations). :::
 
-5.2.  OR Composition
+6.2.  OR Composition
 
    In the following we explain how to construct a Sigma protocol proving
    knowledge of one out of a set of witnesses, for instance one of a set
@@ -971,7 +986,7 @@ return `(T_vec, pstate) =((T_0,T_1),(pstate[j],c_{1-j},s_{1-j}))
    T_1 <-right.simulate_commitment(c_1,s_1)
    return T_vec =(T_0,T_1)
 
-6.  Additional proof types
+7.  Additional proof types
 
    Other protocols are not included here and are not part of the scope
    of the current version of this spec.
@@ -984,9 +999,9 @@ return `(T_vec, pstate) =((T_0,T_1),(pstate[j],c_{1-j},s_{1-j}))
 
    *  syndrome decoding and LPN [@C:Stern93; @AC:JKPT12]
 
-7.  Test vectors
+8.  Test vectors
 
-8.  Acknowledgments
+9.  Acknowledgments
 
    Jan Bobolz, Mary Maller, Ivan Visconti, Yuwen Zhang.
 
