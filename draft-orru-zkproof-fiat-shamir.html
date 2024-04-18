@@ -1222,25 +1222,46 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-ciphersuites" class="section-name selfRef">Ciphersuites</a>
       </h2>
 <p id="section-2-1">Different hash functions may rely on different constants. We define some of the parameters associated to the hash function that will be used throughout this spec.<a href="#section-2-1" class="pilcrow">¶</a></p>
-<p id="section-2-2">::: center
-         Const name        Notes
-  ------------------------ -------------------------------------------------------------------------------------------------------------
-     DOMSEP     Domain separator for this standard. Fixed to $\texttt{\textquotesingle{}zkpstd/sigma/0.1\textquotesingle<code>.
-        </code>BLOCK_LEN<code>   Length of a hash block
-        </code>DIGEST_LEN`  Digest length
-:::<a href="#section-2-2" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-2-2">
+        <dt id="section-2-2.1">DOMSEP</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.2">
+          <p id="section-2-2.2.1">Domain separator for this standard. Fixed to <code>zkpstd/0.1</code><a href="#section-2-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
 <div id="sec_hash-registry">
 <section id="section-2.1">
         <h3 id="name-hash-registry">
 <a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-hash-registry" class="section-name selfRef">Hash Registry</a>
         </h3>
 <p id="section-2.1-1">This is the set of all supported hash functions. They take an arbitrary length sequence of bytes as input, and output 32 bytes of entropy.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
-<p id="section-2.1-2">::: center
-  Hash       Source           <code>BLOCK_LEN}$    $\texttt{DIGEST_LEN</code>
-  ---------- ---------------- ----------------------- ------------------------ --
-  blake2b    [@ACNS:ANWW13]   128                                64
-  sha3-256   [@EC:BDPA13]     136                                32
-:::<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+          <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Hash function</th>
+              <th class="text-left" rowspan="1" colspan="1">C</th>
+              <th class="text-left" rowspan="1" colspan="1">R</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">blake2b [@ACNS:ANWW13]</td>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">sha3-256 [@EC:BDPA13]</td>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">???</td>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+            </tr>
+          </tbody>
+        </table>
 <p id="section-2.1-3">Supported hash functions must all have <code>BLOCK_LEN</code> &gt; 32. We define labels and constant strings so that their length is always at most 32 bytes. If <code>DIGEST_LEN</code> &gt; 32, we implicitly assume that the implementation considers only the least significant bytes and discards the remainder of the hash output when exactly 32 bytes are needed.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1295,6 +1316,7 @@ squeeze_pos=absorb_pos=0
 <div class="alignLeft art-text artwork" id="section-4-6">
 <pre>
 Absorb(State, Input[])
+
 If Input is empty, set squeeze_pos=R
 If absorb_pos==R, let State=P(state); set absorb_pos=0 and run Absorb(State, Input[]).
 Else, State[absorb_pos]=Input[0]; absorb_pos+=1, recursively run
@@ -1305,6 +1327,7 @@ Absorb(State, Input[1..]).
 <div class="alignLeft art-text artwork" id="section-4-8">
 <pre>
 Squeeze(State, Output[])
+
 If squeeze_pos==R, let State=P(State); set absorb_pos=0 and run Squeeze(State, Output[]).
 Else, Output[0]=State[squeeze_pos]; squeeze_pos+=1, recursively run Squeeze(State, Output[1..])
 </pre><a href="#section-4-8" class="pilcrow">¶</a>
@@ -1313,6 +1336,7 @@ Else, Output[0]=State[squeeze_pos]; squeeze_pos+=1, recursively run Squeeze(Stat
 <div class="alignLeft art-text artwork" id="section-4-10">
 <pre>
 RATCHET(State)
+
 Permute the state: State = P(State); zero the rate part of the state
 State[..R] = 0, set the counters squeeze_pos=absorb_pos=0.
 </pre><a href="#section-4-10" class="pilcrow">¶</a>
@@ -1321,6 +1345,7 @@ State[..R] = 0, set the counters squeeze_pos=absorb_pos=0.
 <div class="alignLeft art-text artwork" id="section-4-12">
 <pre>
 FINISH(State)
+
 Safely delete State
 </pre><a href="#section-4-12" class="pilcrow">¶</a>
 </div>

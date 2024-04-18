@@ -363,7 +363,8 @@ Table of Contents
 
    Prover algorithm.
 
-   SigmaProtocol.batchable_proof(w):
+   SigmaProtocol.batchable_proof(w)
+
    (T_vec, pstate) = SigmaProtocol.prover_commit(w)
    c = SigmaProtocol.challenge(T)
    s_vec = SigmaProtocol.prover_response(pstate, c)
@@ -375,6 +376,7 @@ Table of Contents
    Verifier algorithm.
 
    SigmaProtocol.batchable_verify(proof)
+
    (T,s) = Deserialize(proof)
    c <- SigmaProtocol.challenge(T)
    return SigmaProtocol.verifier(T, c, s)
@@ -392,6 +394,7 @@ Table of Contents
    Prover algorithm.
 
    SigmaProtocol.short_proof(w)
+
    (T, pstate) <- SigmaProtocol.prover_commit(w)
    c <- SigmaProtocol.challenge(T)
    s_vec <- SigmaProtocol.prover_response(pstate,c)
@@ -402,11 +405,12 @@ Table of Contents
 
    Verifier algorithm.
 
-   SigmaProtocol.short_verify(proof):
+   SigmaProtocol.short_verify(proof)
+
    (c, s) = Deserialize(proof)
    T <- SigmaProtocol.simulate_commitment(c, s)
-   c^* <- SigmaProtocol.challenge(T)
-   return (c ==c^*)
+   expected_c <- SigmaProtocol.challenge(T)
+   return (c == expected_c)
 
    If input parsing fails, an exception should be raised.  If
    verification fails, an exception should be raised.  Otherwise, the
@@ -561,16 +565,16 @@ Table of Contents
 
    *  []{#item:basic:p2 label ="item:basic:p2"}
 
-      s_vec <- DlogTemplate.prover_response(pstate,c): (r_1, ...
-      ,r_n)=pstate (w_1, ... ,w_n)=w_vec e = FromBytes(c) for i = 1, ...
-      ,n$: $s_i = r_i+e w_i return s_vec = (s_1, ... ,s_n)
+      s_vec <- DlogTemplate.prover_response(pstate,c): (r_1, ... ,r_n)=
+      pstate (w_1, ... ,w_n)= w_vec e = FromBytes(c) for i = 1, ... ,n$:
+      $s_i = r_i+e w_i return s_vec = (s_1, ... ,s_n)
 
    *  DlogTemplate.label() return morphism_label().
 
    *  []{#item:basic:v label ="item:basic:v"}
       DlogTemplate.verifier(T_vec,c,s_vec) proceeds as follows:
 
-      (s_1, ... , s_n) =s_vec (T_1, ... , T_m) = T_vec e = FromBytes(c)
+      (s_1, ... , s_n) = s_vec (T_1, ... , T_m) = T_vec e = FromBytes(c)
       for i =1, ... ,n: check $s_i in GF(p) for $j =1, ... ,m$: check
       $T_j in GG return ((T_1 + eY_1, ... ,T_m + eY_m) = \varphi(s_1,
       ... ,s_n))
@@ -621,7 +625,7 @@ R_lin = {
    R_lin'=\set{((Y_1, ... ,Y_m),(w_1, ... ,w_{n-k})) : (Y_1, ...
    ,Y_m)=\psi(w_1, ... ,w_{n-k})}where\begin{aligned} \psi(w_1, ...
    ,w_{n-k}) &:= \varphi(w_1, ... ,w_{n-k},-\sum_{i =1}^{n-k}a_{1i}w_i,
-   ... ,-\sum_{i=1}^{n-k}a_{ki}w_i)\text{ and}
+   ... ,-\sum_{i = 1}^{n-k}a_{ki}w_i)\text{ and}
    (Y_1', ... ,Y_m') &:= (Y_1, ... ,Y_m) - \varphi(0, ... ,0,b_1, ...
    ,b_k). \end{aligned}$$
 
@@ -632,11 +636,10 @@ R_lin = {
 
 3.4.1.  Schnorr signatures
 
-   Schnorr signatures, also known as Schnorr proofs or DLOG proofs,
-   prove knowledge of the discrete logarithm $w in GF(p)$ of a point
-   $Y=wG$ in base G.
+   Schnorr signatures prove knowledge of the discrete logarithm $w in
+   GF(p)$ of a point $Y = wG$ in base G.
 
-   *  \varphi:GF(p) -> GG:w\mapsto wG
+   *  \varphi:GF(p) -> GG:w -> wG
 
    *  Schnorr.morphism_label(): return:
       $$\hash(\texttt{\textquotesingle{}schnorrsig\textquotesingle},
@@ -660,13 +663,13 @@ R_lin = {
 
    Let GG be a group over an elliptic curve with prime order p.  Proving
    knowledge of the exponents of a valid Diffie-Hellman triple means
-   proving knowledge of $w_1,w_2 in GF(p)$ such that $Y_1=w_1G$,
-   $Y_2=w_2G$, and $Y_3=w_1 w_2 G$. The mapping $GF(p)^2 ->
+   proving knowledge of $w_1,w_2 in GF(p)$ such that $Y_1= w_1G$, $Y_2=
+   w_2G$, and $Y_3= w_1 w_2 G$. The mapping $GF(p)^2 ->
    GG^3:(w_1,w_2)\mapsto (w_1G,w_2G,w_1w_2G)$ is not a homomorphism, and
    consequently the basic protocol presented before cannot be deployed
    directly.  However, the required multiplicative relation can be
-   proven by observing that the proof goal is equivalent to $Y_1=w_1G$,
-   $Y_2=w_2G$, and $Y_3=w_2Y_1$, leading the homomorphism
+   proven by observing that the proof goal is equivalent to $Y_1= w_1G$,
+   $Y_2= w_2G$, and $Y_3= w_2Y_1$, leading the homomorphism
 
    *  $\varphi:GF(p)^2 -> GG^3:(w_1,w_2)\mapsto(w_1G,w_2G,w_2Y_1)$
 
@@ -684,7 +687,7 @@ R_lin = {
    Let GG be a group over an elliptic curve of prime order p, and let
    G_1, ... , G_m be generators of GG.  Proving knowledge of a valid
    opening of a Pedersen commitment means proving knowledge of w_1,w_2,
-   ... , w_m in GF(p) such that Y=w_1G_1 + w_2G_2 + ... + w_m G_m.
+   ... , w_m in GF(p) such that Y = w_1G_1 + w_2G_2 + ... + w_m G_m.
 
    *  $\varphi:GF(p)^m -> GG:(w_1,w_2, ... , w_m)\mapsto \sum_i w_iG_i$
 
@@ -695,35 +698,35 @@ R_lin = {
    ::: example Range proofs via bit decomposition Let GG be a cyclic
    group of prime order p, and let G and H be generators of GG, and let
    $\ell$ be a non-negative integer satisfying $\ell<\log_2 p$. Consider
-   the following relation: {R_range} =
-   \set{łeft(Y,(w_1,w_2))\right)~:~Y=w_1 G +w_2 H ~łand~ w_1 in
-   [0,2^ℓ)}. Multiple techniques for proving that a secret witness lies
-   within a certain range, cf. Morais et al. [@range-proof-survey] for a
-   survey.  We will use the so-called _bit decomposition_ approach.
+   the following relation: {R_range} = \set{łeft(Y,(w_1,w_2))\right)~:~Y
+   = w_1 G +w_2 H ~łand~ w_1 in [0,2^ℓ)}. Multiple techniques for
+   proving that a secret witness lies within a certain range, cf. Morais
+   et al. [@range-proof-survey] for a survey.  We will use the so-called
+   _bit decomposition_ approach.
 
-   To do so, the prover computes $w_{1,i} in \set{0,1}$ for $i=0, ...
-   ,\ell-1$ such that $w_1=\sum_{i=0}^{\ell-1}2^iw_{1,i}$, and computes
-   commitments to those individual bits, i.e., $Y_i=w_{1,i}G+w_{2,i}H$
-   for $w_{2,i} <-$- GF(p)$. Furthermore, it sets $w^*=w_2-
-   \sum_{i=0}^{\ell-1}2^iw_{2,i}$.
+   To do so, the prover computes $w_{1,i} in \set{0,1}$ for $i =0, ...
+   ,\ell-1$ such that $w_1=\sum_{i =0}^{\ell-1}2^iw_{1,i}$, and computes
+   commitments to those individual bits, i.e., $Y_i = w_{1,i}G+w_{2,i}H$
+   for $w_{2,i} <-$- GF(p)$. Furthermore, it sets $w^*= w_2-\sum_{i
+   =0}^{\ell-1}2^iw_{2,i}$.
 
    Assuming that the discrete logarithm problem is hard in GG, the above
    relation is now equivalent to the following relation:
-   $$\begin{aligned} {R_range}' = \bigg{\left((Y,(Y_i)_{i=0}^{\ell-
-   1}),(w_1,w_2,(w_{2,i})_{i=0}^{\ell-1}),w^*)\right)~:~ Y=w_1 G +w_2 H
-   ~\land~
-   Y-\sum_{i=0}^{\ell-1} 2^iY_i = w^* H ~\land~
-   \bigwedge_{i=0}^{\ell-1} \left(Y_i=w_{2,i}H ~\lor~ Y_i-
-   G=w_{2,i}H\right)\bigg}.
+   $$\begin{aligned} {R_range}' = \bigg{\left((Y,(Y_i)_{i =0}^{\ell-
+   1}),(w_1,w_2,(w_{2,i})_{i =0}^{\ell-1}),w^*)\right)~:~ Y = w_1 G +w_2
+   H ~\land~
+   Y-\sum_{i =0}^{\ell-1} 2^iY_i = w^* H ~\land~
+   \bigwedge_{i =0}^{\ell-1} \left(Y_i = w_{2,i}H ~\lor~ Y_i-G =
+   w_{2,i}H\right)\bigg}.
 
    \end{aligned}$$
 
    It can now be seen that the above ensures knowledge of the witnesses
    $w_1$ hidden within Y.  Furthermore, we guarantee that the values
-   hidden within $Y_i$ correctly add up to $w_1$, i.e., that $w_1-
-   \sum_{i=0}^{\ell-1}2^iw_{1,i}=0$. Finally, the two clauses ensure
-   that each $Y_i$ is a commitment to either 0 or 1, thus implying the
-   bound on $w_1$.
+   hidden within $Y_i$ correctly add up to $w_1$, i.e., that
+   $w_1-\sum_{i =0}^{\ell-1}2^iw_{1,i}=0$. Finally, the two clauses
+   ensure that each $Y_i$ is a commitment to either 0 or 1, thus
+   implying the bound on $w_1$.
 
    The different clauses can finally be composed using nested protocol
    compositions from 2.5 (Section 5). :::
@@ -732,10 +735,10 @@ R_lin = {
 
    The batchable form can take advantage of the following fact.  Given
    $\ell$ verification equations of the form: T_i + c_i Y_i = ∑_j s_j
-   G_{i,j} for $i=1, ... ,\ell$, the verifier can sample a random vector
-   of coefficients $a_vec in GF(p)^\ell$ and instead test:
-   łeft(∑_{i=1}^{ℓ} a_i T_i\right) + łeft(∑_{i=1}^{ℓ} a_i ⋅ c_i Y_i
-   \right) = łeft(∑_{i=1}^{ℓ} a_i ⋅ ∑_j s_j G_{i,j}\right).  If the
+   G_{i,j} for $i =1, ... ,\ell$, the verifier can sample a random
+   vector of coefficients $a_vec in GF(p)^\ell$ and instead test:
+   łeft(∑_{i =1}^{ℓ} a_i T_i\right) + łeft(∑_{i =1}^{ℓ} a_i ⋅ c_i Y_i
+   \right) = łeft(∑_{i =1}^{ℓ} a_i ⋅ ∑_j s_j G_{i,j}\right).  If the
    matrix $G_{i, j}$ of generators has identical rows, by linearity the
    right-hand side can be computed as a single scalar product.  If the
    statements $Y_i$'s have identical rows, by linearity the second term
@@ -743,8 +746,8 @@ R_lin = {
 
    In any case, the test can be efficiently implemented as a single
    multi-scalar multiplication, minimizing the number of group
-   operations needed: łeft(∑_{i=1}^{ℓ} a_i T_i\right) + łeft(∑_{i=1}^{ℓ}
-   (a_i ⋅ c_i) Y_i \right) + łeft(∑_{i=1}^{ℓ}∑_j (−a_i ⋅ s_j)
+   operations needed: łeft(∑_{i =1}^{ℓ} a_i T_i\right) + łeft(∑_{i
+   =1}^{ℓ} (a_i ⋅ c_i) Y_i \right) + łeft(∑_{i =1}^{ℓ}∑_j (−a_i ⋅ s_j)
    G_{i,j}\right) = 0.
 
    The random vector $a_vec$ can be _deterministically_ generated by
@@ -773,8 +776,7 @@ R_lin = {
 
 5.  Composition of Sigma Protocols
 
-   []{#sec:or-comp label="sec:or-comp"} []{#sec:and-comp label="sec:and-
-   comp"} Sigma protocols can be composed to prove knowledge of multiple
+   Sigma protocols can be composed to prove knowledge of multiple
    independent witnesses (_AND composition_), and for proving knowledge
    for one out of a set of witnesses (_OR composition_).  An object
    SigmaProtocol can be seen as a recursive enumeration
@@ -825,24 +827,26 @@ R_lin = {
 
    -
 
-   (T_vec, pstate) <- AndComposition.prover_commit(w_vec):
-   (w_0,w_1)=w_vec`
-   (T_0, pstate_0)<- left.prover_commit(w_0)
-   (T_1, pstate_1)<-`right.prover_commit(w_1)
+   (T_vec, pstate) <- AndComposition.prover_commit(w_vec)
+   (w_0,w_1) = w_vec
+   (T_0, pstate_0) <- left.prover_commit(w_0)
+   (T_1, pstate_1) <- right.prover_commit(w_1)
    return (T_vec,pstate) = ((T_0,  T_1),(pstate_0, pstate_1))
 
    -
 
    s_vec <- AndComposition.prover_response(pstate, c)
+
    (pstate_0,pstate_1)= pstate`
    s_0 <- left.prover_response(pstate_0, c)`
    s_1 <- right.prover_response(pstate_1, c)`
-   return `s_vec=(s_0,s_1)`
+   return s_vec = (s_0,s_1)
 
    -
 
    AndComposition.verifier(T_vec, c, s_vec)
-   (s_0, s_1)=s_vec$.
+
+   (s_0, s_1)= s_vec$.
    return (left.verifier(T_0,c, s_0) and right.verifier(T_1,c, s_1))
 
    -
@@ -854,14 +858,16 @@ R_lin = {
 
    -
 
-   s_vec <- AndComposition.simulate_response()
+   AndComposition.simulate_response()
+
    s_0 <- left.simulate_response()
    s_1 <- right.simulate_response()
    return s_vec = (s_0,s_1)
 
    -
 
-   T_vec <- AndComposition.simulate_commitment(c, s_vec):
+   AndComposition.simulate_commitment(c, s_vec)
+
    (s_0,s_1) = s_vec
    T_0 <- left.simulate_commitment(c,s_0)
    T_1 <- right.simulate_commitment(c,s_1)
@@ -914,53 +920,55 @@ R_lin = {
 
    -
 
-(T_vec, pstate) <- OrComposition.prover_commit(w_vec)`:
+(T_vec, pstate) <- OrComposition.prover_commit(w_vec)
+
 Prover = [left, right]
-(w_0,w_1)=w_vec`, and let $j in \bin$ be the first index for which $w[j]!= None$
+(w_0,w_1)= w_vec`, and let $j in \bin$ be the first index for which $w[j]!= None$
 (T_j,`pstate`_j)<-Prover[j].prover_commit(Y_j,w_j)
 s_{1-j}<-Prover`[1-j].`simulate_response()
-hoose a random $c_{1-j}$ in $\mathcal{C}$
+choose a random $c_{1-j}$ in $\mathcal{C}$
 T_{1-j}<- Prover[1-j].simulate_commitment(c_{1-j},s_{1-j})
 return `(T_vec, pstate) =((T_0,T_1),(pstate[j],c_{1-j},s_{1-j}))
 
-   *  s_vec <- OrComposition.prover_response(pstate, c):
+   -
 
-      1.  (pstate[j],c[1-j],s_[1-j])=pstate
+   s_vec <- OrComposition.prover_response(pstate, c)
 
-      2.  c[j]= c XOR c[1-j]
+   (pstate[j],c[1-j],s_[1-j])= pstate
+   c[j]= c XOR c[1-j]
+   s[j] <- Prover[j].prover_response(pstate[j], c[j])
+   return s_vec = (s_0,s_1, c_0)
 
-      3.  s[j] <- Prover[j].prover_response(pstate[j], c[j])
+   -
 
-      4.  Return $s_vec=(s_0,s_1, c_0)$.
+   OrComposition.verifier(T_vec, c, s_vec)
 
-   *  OrComposition.verifier(T_vec, c, s_vec),
-
-      (s_0, s_1, c_0) = s_vec c_1= c\oplus c_0 return
-      (left.verifier(T_0,c_0,s_0) and right.verifier(T_1,c_1,s_1))
+   (s_0, s_1, c_0) = s_vec
+   c_1= c\oplus c_0
+   return (left.verifier(T_0,c_0,s_0) and right.verifier(T_1,c_1,s_1))
 
    *  OrComposition.label() is computed as:
       $H((\texttt{\textquotesingle{}or-composition\textquotesingle}\math
       bf{\mid}~left.label(),~right.label())$
 
-   *  s_vec <- OrComposition.simulate_response()
+   -
 
-      1.  $(Y_0,Y_1)=Y_vec$.
+   s_vec <- OrComposition.simulate_response()
 
-      2.  $s_0<-left.simulate_response()
-
-      3.  $s_1<-right.simulate_response()
-
-      4.  Choose a random $c_0$ in $\mathcal{C}$.
-
-      5.  Return $s_vec=(s_0,s_1,c_0)$.
+   (Y_0,Y_1)= Y_vec$.
+   s_0<-`left.simulate_response()`
+   s_1<-`right.simulate_response()`
+   choose a random $c_0$ in $\mathcal{C}$.
+   return $s_vec=(s_0,s_1,c_0)$.
 
    -
 
-   T_vec <- OrComposition.simulate_commitment(c, s_vec):
-   (s_0,s_1,c_0)=s_vec
-   c_1= c XOR c_0
+   T_vec <- OrComposition.simulate_commitment(c, s_vec)
+
+   (s_0,s_1,c_0) = s_vec
+   c_1 = c XOR c_0
    T_0 <-left.simulate_commitment(c_0,s_0)
-   T_1<-right.simulate_commitment(c_1,s_1)
+   T_1 <-right.simulate_commitment(c_1,s_1)
    return T_vec =(T_0,T_1)
 
 6.  Additional proof types

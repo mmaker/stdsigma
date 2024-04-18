@@ -119,12 +119,7 @@ Table of Contents
    some of the parameters associated to the hash function that will be
    used throughout this spec.
 
-   ::: center Const name Notes ------------------------ ----------------
-   ---------------------------------------------------------------------
-   ------------------------ DOMSEP Domain separator for this standard.
-   Fixed to $\texttt{\textquotesingle{}zkpstd/
-   sigma/0.1\textquotesingle.BLOCK_LENLength of a hash blockDIGEST_LEN`
-   Digest length :::
+   DOMSEP  Domain separator for this standard.  Fixed to zkpstd/0.1
 
 2.1.  Hash Registry
 
@@ -132,9 +127,17 @@ Table of Contents
    arbitrary length sequence of bytes as input, and output 32 bytes of
    entropy.
 
-   ::: center Hash Source BLOCK_LEN}$ $\texttt{DIGEST_LEN ----------
-   ---------------- ----------------------- ------------------------ --
-   blake2b [@ACNS:ANWW13] 128 64 sha3-256 [@EC:BDPA13] 136 32 :::
+                    +========================+===+===+
+                    | Hash function          | C | R |
+                    +========================+===+===+
+                    | blake2b [@ACNS:ANWW13] |   |   |
+                    +------------------------+---+---+
+                    | sha3-256 [@EC:BDPA13]  |   |   |
+                    +------------------------+---+---+
+                    | ???                    |   |   |
+                    +------------------------+---+---+
+
+                                 Table 1
 
    Supported hash functions must all have BLOCK_LEN > 32.  We define
    labels and constant strings so that their length is always at most 32
@@ -206,6 +209,7 @@ domain-separator A32generator A32public-key R A32commitment S32challenge A32resp
    -
 
 Absorb(State, Input[])
+
 If Input is empty, set squeeze_pos=R
 If absorb_pos==R, let State=P(state); set absorb_pos=0 and run Absorb(State, Input[]).
 Else, State[absorb_pos]=Input[0]; absorb_pos+=1, recursively run
@@ -214,18 +218,21 @@ Absorb(State, Input[1..]).
    -
 
 Squeeze(State, Output[])
+
 If squeeze_pos==R, let State=P(State); set absorb_pos=0 and run Squeeze(State, Output[]).
 Else, Output[0]=State[squeeze_pos]; squeeze_pos+=1, recursively run Squeeze(State, Output[1..])
 
    -
 
    RATCHET(State)
+
    Permute the state: State = P(State); zero the rate part of the state
    State[..R] = 0, set the counters squeeze_pos=absorb_pos=0.
 
    -
 
    FINISH(State)
+
    Safely delete State
 
 4.1.  Generating challenges
