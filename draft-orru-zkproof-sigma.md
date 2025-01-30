@@ -45,35 +45,53 @@ This document describes Sigma protocols, a secure, general-purpose non-interacti
 
 A Schnorr constraint is represented as:
 
-```
-struct ConstraintSystem {
-    num_equations: usize                     // the number of equations to be proven
-    num_terms: usize                         // the number of terms in each equation
-    generators: Vec<Point>                   // the generators to be used in the proof
-    equations: [Equations; num_equations]    // the list of equations to be proven
-}
-```
+    struct ConstraintSystem {
+        num_equations: usize                     // the number of equations to be proven
+        points: Vec<Point>                       // the group elements to be used in the proof
+        num_terms: usize                         // the number of terms in each equation
+        equations: [Equations; num_equations]    // the list of equations to be proven
+    }
 
 where `Equation` is the following type:
 
-```
-struct Equation {
-    lhs: usize                               // An index in the list of generators representing the left-hand side part of the equation
-    rhs: Vec<(usize, usize)>                 // A linear combination (ScalarIndex, PointIndex) referring to a scalar and a generator
-}
-```
+    struct Equation {
+        lhs: usize                               // An index in the list of generators representing the left-hand side part of the equation
+        rhs: Vec<(usize, usize)>                 // A linear combination (ScalarIndex, PointIndex) referring to a scalar and a generator
+    }
 
 A witness is defined as:
+
+    struct Witness {
+        scalars: [Scalar; num_terms] // the set of scalars ONLY USED BY THE PROVER
+        cs: ConstraintSystem
+    }
+
+
+For those familiar with the matrix notation, `SchnorrCS` is encoding a sparse linear equation of the form `A * scalars = B`, where `A` is a matrix of `num_equations` rows, `scalars.len` columns, of group elements. Each element is identified by a pair `(usize, usize)` denoting the column index, and the value (an index referring to `generators`).
+The vector `B` is a list of indices referring to `generators`.
+
+
+## Nonce and challenge derivation
+
+Two types of randomness are needed for a sigma protocol:
+1. A nonce seeding the randomness used to produce the commitment of the first round of the protocol
+2. A challenge representing the verifier's public random coin.
+
+The challenge of a Schnorr proof is derived with
+
 ```
-struct Witness{
-    scalars: [Scalar; num_terms] // the set of scalars ONLY USED BY THE PROVER
-    cs: ConstraintSystem
-}
+challenge = sho.init(iv).absorb_points(commitment).squeeze_scalar(1)
 ```
 
-For those familiar with the matrix notation, `SchnorrCS` is encoding a sparse linear equation of the form `A * scalars = b`, where `A` is a matrix of `num_equations` rows, `scalars.len` columns, whose elements are identified by a pair `(usize, usize)` denoting the column index, and the value (an index referring to `generators`); `b` is a vector of indices referring to `generators`.
+This can be generated with:
 
-## Statement generation
+```
+nonce = sho.init(iv).absorb_points(commitment).squeeze_scalars(cs.num_terms)
+```
+
+The `iv`, which must properly separate the application and the statement being proved, is described below.
+
+### Statement generation
 
 Let `H` be a hasher object. The statement is encoded in a stateful hash object as follows.
 ```
@@ -85,21 +103,7 @@ Let `H` be a hasher object. The statement is encoded in a stateful hash object a
     iv = hasher.digest()
 ```
 
-## Nonce and challenge derivation
-
-The challenge of a Schnorr proof is derived with
-
-```
-challenge = sho.init(iv).absorb_points(commitment).squeeze_scalar(1)
-```
-
-During the execution of a Schnorr proof, it is often useful to produce a nonce to seed the initial commitment. This can be generated with:
-
-```
-nonce = sho.init(iv).absorb_points(commitment).squeeze_scalars(cs.num_terms)
-```
-
-This should correspond to the following:
+In simpler terms, without stateful hash objects, this should correspond to the following:
 
 ```
 bin_challenge = SHAKE128(iv).update(commitment).digest(scalar_bytes)
@@ -117,7 +121,34 @@ Where:
     - `scalar_bytes` is the number of bytes required to produce a uniformly random group element
     - `random` is a random seed obtained from the operating system memory
 
-##
+## Proof generation
+
+The proving function is
+
+    def prove()
+
+
+## Representing the statement
+
+
+Traditionally, proof system are defined in Camenish-Stadtler notation as (for example):
+
+    VRF = {
+      (x),            // Secret variables
+      (A, B, G, H),   // Public group elements
+      A = x * B,      // Statements to prove
+      G = x * H
+    }
+
+
+This is equivalently done with:
+
+    cs = ConstraintSystem.new("VRF")
+    [x] = cs.allocate_scalars(["x"])
+    [A, B, G, H] = cs.allocate_points(["A". "B", "G", "H"])
+    cs.append_constraint(lhs=A, rhs=[(x, B)])
+    cs.append_constraint(lhs=G, rhs=[(x, H)])
+
 
 # OLD TEXT TO BE MERGED
 
