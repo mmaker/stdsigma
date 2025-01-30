@@ -37,6 +37,27 @@ This document describes the Fiat-Shamir transform.
 
 --- middle
 
+A stateful hash objects can absorb inputs incrementally and squeeze variable-length unpredictable messages.
+
+## The API
+
+- `SHO.init(iv) -> sho`, creates a new `sho` object with a description;
+- `sho.absorb(state, values)`, absorbs a list of "native" elements (that is, elements in the same domain of the hash function);
+- `sho.squeeze(length)`, squeezes from the  a list of "native" elements
+- `sho.finalize()`, deletes the hash object safely.
+
+## Sigma protocols example
+
+Two hash states are needed, one public and one private for nonce generation. They are built as follows.
+
+```
+    iv  = SHA3-256(label)
+    challenge = SHAKE128(iv || commitment)
+    private_nonce = SHAKE128(iv || witness)
+```
+
+# OLD TEXT TO INTEGRATE
+
 # Introduction {#sec:fs}
 
 We show how to perform Fiat-Shamir on any public-coin protocol, providing randomness for the prover and secure generation of random coins for the verifier. Informally, a non-interactive zero-knowledge proof constructed via the Fiat-Shamir heuristic, the verifier (random oracle) is replaced with a duplex sponge. Messages from the prover are treated as `Absorb` calls, while challenges are treated as `Squeeze` calls. We will see this in detail below. Core features are:

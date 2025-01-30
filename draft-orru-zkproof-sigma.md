@@ -40,6 +40,83 @@ This document describes Sigma protocols, a secure, general-purpose non-interacti
 
 --- middle
 
+
+## Constraint representation
+
+A Schnorr constraint is represented as
+
+```
+struct SchnorrCS {
+    num_equations: usize // the number of equations to be proven
+    num_terms: usize // the number of terms in each equation
+    generators: Vec<Point> // the generators to be used in the proof
+    scalars: [Scalar; num_terms] // the set of scalars ONLY USED BY THE PROVER
+    equations: [Equations; num_equations] //
+}
+```
+
+where `Equation` is the following type
+
+
+```
+struct Equation {
+    lhs: usize // index of point in the array of generators
+    rhs: Vec<(usize, usize)> // list of pairs (ScalarIndex, PointIndex)
+}
+```
+
+In matrix notation, `SchnorrCS` is encoding a sparse linear equation of the form `A * scalars = b`, where
+`A` is a matrix of `num_equations` rows, `scalars.len` columns, whose elements are identified by a pair `(usize, usize)` denoting the column index, and the value (an index referring to `generators`); `b` is a vector of indices referring to `generators`.
+
+## Statement generation
+
+The statement is encoded in a stateful hash object as follows.
+```
+    hasher = SHA3_256.new(domain_separator)
+    hasher.update_usize([cs.num_equations, cs.num_terms])
+    for equation in cs.equations:
+        hasher.update_usize([equation.lhs, equation.rhs[0], equation.rhs[1]])
+    hasher.absorb_points(generators)
+    iv = hasher.digest()
+```
+
+
+## Challenge derivation
+
+The challenge of a Schnorr proof is derived with
+
+```
+challenge = sho.init(iv).absorb_points(commitment).squeeze_scalar(1)
+```
+
+During the execution of a Schnorr proof, it is often useful to produce a nonce to seed the initial commitment. This can be generated with:
+
+```
+nonce = sho.init(iv).absorb_points(commitment).squeeze_scalars(cs.num_terms)
+```
+
+This should correspond to the following:
+
+```
+bin_challenge = SHAKE128(iv).update(commitment).digest(scalar_bytes)
+challenge = int(bin_challenge) % p
+```
+
+and the nonce is produced as:
+```
+bin_nonce = SHAKE128(iv).update(random).update(pad).update(cs.scalars).digest(cs.num_terms * scalar_bytes)
+nonces = [int(bin_nonce[i*scalar_bytes: i*(scalar_bytes+1)]) % p for i in range(cs.num_terms-1)]
+```
+
+Where:
+    - `pad` is a (padding) zero string of length `168 - len(random)`.
+    - `scalar_bytes` is the number of bytes required to produce a uniformly random group element
+    - `random` is a random seed obtained from the operating system memory
+
+##
+
+# OLD TEXT TO BE MERGED
+
 # Introduction
 
 Zero-knowledge proofs of knowledge allow a prover to convince a verifier that they know a secret piece of information, without revealing anything except that the claim itself already reveals.
