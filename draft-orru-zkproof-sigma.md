@@ -43,36 +43,41 @@ This document describes Sigma protocols, a secure, general-purpose non-interacti
 
 ## Constraint representation
 
-A Schnorr constraint is represented as
+A Schnorr constraint is represented as:
 
 ```
-struct SchnorrCS {
-    num_equations: usize // the number of equations to be proven
-    num_terms: usize // the number of terms in each equation
-    generators: Vec<Point> // the generators to be used in the proof
-    scalars: [Scalar; num_terms] // the set of scalars ONLY USED BY THE PROVER
-    equations: [Equations; num_equations] //
+struct ConstraintSystem {
+    num_equations: usize                     // the number of equations to be proven
+    num_terms: usize                         // the number of terms in each equation
+    generators: Vec<Point>                   // the generators to be used in the proof
+    equations: [Equations; num_equations]    // the list of equations to be proven
 }
 ```
 
-where `Equation` is the following type
-
+where `Equation` is the following type:
 
 ```
 struct Equation {
-    lhs: usize // index of point in the array of generators
-    rhs: Vec<(usize, usize)> // list of pairs (ScalarIndex, PointIndex)
+    lhs: usize                               // An index in the list of generators representing the left-hand side part of the equation
+    rhs: Vec<(usize, usize)>                 // A linear combination (ScalarIndex, PointIndex) referring to a scalar and a generator
 }
 ```
 
-In matrix notation, `SchnorrCS` is encoding a sparse linear equation of the form `A * scalars = b`, where
-`A` is a matrix of `num_equations` rows, `scalars.len` columns, whose elements are identified by a pair `(usize, usize)` denoting the column index, and the value (an index referring to `generators`); `b` is a vector of indices referring to `generators`.
+A witness is defined as:
+```
+struct Witness{
+    scalars: [Scalar; num_terms] // the set of scalars ONLY USED BY THE PROVER
+    cs: ConstraintSystem
+}
+```
+
+For those familiar with the matrix notation, `SchnorrCS` is encoding a sparse linear equation of the form `A * scalars = b`, where `A` is a matrix of `num_equations` rows, `scalars.len` columns, whose elements are identified by a pair `(usize, usize)` denoting the column index, and the value (an index referring to `generators`); `b` is a vector of indices referring to `generators`.
 
 ## Statement generation
 
-The statement is encoded in a stateful hash object as follows.
+Let `H` be a hasher object. The statement is encoded in a stateful hash object as follows.
 ```
-    hasher = SHA3_256.new(domain_separator)
+    hasher = H.new(domain_separator)
     hasher.update_usize([cs.num_equations, cs.num_terms])
     for equation in cs.equations:
         hasher.update_usize([equation.lhs, equation.rhs[0], equation.rhs[1]])
@@ -80,8 +85,7 @@ The statement is encoded in a stateful hash object as follows.
     iv = hasher.digest()
 ```
 
-
-## Challenge derivation
+## Nonce and challenge derivation
 
 The challenge of a Schnorr proof is derived with
 
