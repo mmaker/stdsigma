@@ -53,7 +53,7 @@ Two hash states are needed, one public and one private for nonce generation. The
 ```
     iv  = SHA3-256(label)
     challenge = SHAKE128(iv || commitment)
-    private_nonce = SHAKE128(iv || witness)
+    private_nonce = SHAKE128(iv || random || pad || witness)
 ```
 
 # OLD TEXT TO INTEGRATE
