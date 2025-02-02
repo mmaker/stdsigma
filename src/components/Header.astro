@@ -1,0 +1,15 @@
+---
+import HeaderLink from './HeaderLink.astro';
+import { SITE_TITLE } from '../config';
+
+const is_home = Astro.url.pathname === "/";
+---
+
+<header>
+	<nav class="text-center pb-10 pt-5 lg:space-x-20">
+    	<!-- {is_home? <></>: <a class="site-title" href="/">Home</a>}
+		<HeaderLink href="/publications">Publications</HeaderLink>
+		<HeaderLink href="/teaching">Teaching</HeaderLink>
+		<HeaderLink href="/code">Code</HeaderLink> -->
+	</nav>
+</header>

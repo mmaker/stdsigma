@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+.taocp {
+	background-image:url("/taocp50.png");
+    background-size: 300px;
+    background-repeat: no-repeat;
+    /* background-size: 35% auto;     Set the width to 90% of the element and height will adjust automatically */
+    background-position: 92% 93.5%;
+}
+
+body {
+	font-family: 300 14px/1.115 sans-serif;
+	margin: auto;
+	padding-left: 5%;
+	padding-right: 10%;
+	text-align: left;
+	background-color: #fff;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	line-height: 1.5;
+	color: #444;
+}
+
+h1 {
+	font-size: 2rem;
+	padding-bottom: 5px;
+	text-indent: 10px;
+}
+
+h1:after  {
+    content:' ';
+    display:block;
+    border: 1px solid #d0d0d0;
+    border-radius:4px;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    box-shadow:inset 0 1px 1px rgba(0, 0, 0, .05);
+    -webkit-box-shadow:inset 0 1px 1px rgba(0, 0, 0, .05);
+    -moz-box-shadow:inset 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+h2:after  {
+    content:' ';
+    display:block;
+    border: 1px solid #d0d0d0;
+    border-radius:4px;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    box-shadow:inset 0 1px 1px rgba(0, 0, 0, .05);
+    -webkit-box-shadow:inset 0 1px 1px rgba(0, 0, 0, .05);
+    -moz-box-shadow:inset 0 1px 1px rgba(0, 0, 0, .05);
+	width: 100%;
+}
+
+h2 {
+	font-size: 1.5rem;
+	padding-bottom: 5px;
+	padding-top: 10px;
+}
+
+h3 {
+	font-size: 1.25rem;
+	padding-bottom: 5px;
+	padding-top: 10px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+b {
+	color: #222;
+}
+a {
+	color: #3273dc;
+}
+nav a {
+	margin-right: 10px;
+}
+textarea {
+	width: 100%;
+	font-size: 16px;
+}
+input {
+	font-size: 16px;
+}
+content {
+	line-height: 1.6;
+}
+table {
+	width: 100%;
+}
+img {
+	max-width: 100%;
+	height: auto;
+}
+code {
+	padding: 2px 5px;
+	background-color: #f2f2f2;
+}
+pre {
+	padding: 1rem;
+}
+pre > code {
+	all: unset;
+}
+
+
+blockquote {
+	border-left: 5px solid #d0d0d0;
+	padding: 2px 0px 2px 20px;
+	margin: 0px;
+	font-style: italic;
+	margin-top:10px;
+	margin-bottom: 10px;
+}
+
+/**
+ * Quotes
+ */
+
+ cite {
+    font-style: italic;
+    padding-left: 60%;
+    padding-bottom: 10px;
+ }
+
+
+ul {
+	margin-top: 3px;
+	margin-bottom: 3px;
+	list-style-type: disc;
+	list-style-position: inside;
+}
+
+
+
+p, hr {
+	padding-bottom: 10px;
+}
+
+background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: blur(100px);
+}

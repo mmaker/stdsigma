@@ -1,11 +1,60 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Σ-protocols Working Group">
+  <main class="max-w-3xl mx-auto px-6 py-12">
+    <h1 class="text-4xl font-bold mb-8">Σ-protocols Working Group</h1>
+
+    <div class="prose prose-slate max-w-none">
+      <p class="text-lg mb-6">
+        Zero-knowledge proofs allow a prover to convince a verifier about some claim on a secret piece of information, without revealing anything else that what is already revealed by the claim itself.
+        Many practically relevant proof goals can be realized using so-called Σ-protocols, or their non-interactive counterparts, which can be proven secure in the random oracle model without the need for a common reference string.
+        Introduced over 30 years ago, they are now widely used in practice because of their simplicity, maturity, and versatility.
+      </p>
+
+      <p class="text-lg mb-12">
+        Σ-protocols play an essential component in the building of a number of cryptographic constructions, such as anonymous credentials, password-authenticated key exchange, signatures, ring signatures, blind signatures, multi signatures, threshold signatures, and more.
+        Yet, there is no standardized way of implementing them and as a result a lot of implementations have shared common pitfalls.
+      </p>
+
+      <div class="space-y-8">
+        <section>
+          <h2 class="text-2xl font-semibold mb-4">Core Specifications</h2>
+          <div class="flex flex-col space-y-3">
+            <a href="https://mmaker.github.io/spfs/draft-orru-zkproof-sigma.html" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+              Σ-protocol Specification
+            </a>
+            <br/>
+            <a href="https://mmaker.github.io/spfs/draft-orru-zkproof-fiat-shamir.html" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+              Fiat-Shamir Specification
+            </a>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-semibold mb-4">Resources</h2>
+          <div class="flex flex-col space-y-3">
+            <a href="https://archive.org/details/gmt-20240724-140621-recording-1920x-1080" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+              <iframe src="https://archive.org/embed/gmt-20240724-140621-recording-1920x-1080" width="640" height="480" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>
+              NIST Presentation
+            </a>
+            <br/>
+            <a href="/history" class="inline-flex items-center text-gray-600 hover:text-gray-800">
+              Historical Background
+            </a>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-semibold mb-4">Additional Documentation</h2>
+          <div class="flex flex-col space-y-3 text-sm text-gray-600">
+            <a href="https://docs.zkproof.org/pages/standards/accepted-workshop4/proposal-sigma.pdf" class="hover:text-gray-800">Initial Standardization Proposal</a>
+            <br/>
+            <a href="/tex-spec.pdf" class="hover:text-gray-800">LaTeX Specification</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
 </Layout>
