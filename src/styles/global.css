@@ -9,10 +9,10 @@
 }
 
 body {
-	font-family: 300 14px/1.115 sans-serif;
+	font-family: 300 14px/1.115 monospace;
 	margin: auto;
 	padding-left: 5%;
-	padding-right: 10%;
+	padding-right: 5%;
 	text-align: left;
 	background-color: #fff;
 	word-wrap: break-word;

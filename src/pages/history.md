@@ -1,8 +1,12 @@
+---
+layout: ../layouts/MarkdownLayout.astro
+---
 
-# History of Σ-protocols
+
+<h1 class="font-mono font-bold"> History of Σ-protocols</h1>
 
 
-### 1982
+<h3 class="font-mono"> 1982 </h3>
  Chaum introduces digital cash, (1984) [blind signatures](https://en.wikipedia.org/wiki/Blind_signature), anonymous credentials. Foundational works for the cypherpunks movement and culture.
 *Numbers Can Be a Better Form of Cash than Paper*.
 ![][image1]
