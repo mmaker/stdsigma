@@ -19,7 +19,7 @@ import Layout from '../layouts/Layout.astro';
 
       <div class="space-y-8">
         <section>
-          <h2 class="text-2xl font-semibold mb-4">Core Specifications</h2>
+          <h2 class="text-2xl font-semibold mb-4">Specifications</h2>
 
             <ul class="list-disc list-inside space-y-3">
             <li>
@@ -33,6 +33,18 @@ import Layout from '../layouts/Layout.astro';
               </a>
             </li>
             </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-semibold mb-4">Implementations</h2>
+          <div class="flex flex-col space-y-3">
+            <li>
+              <a href="https://github.com/mmaker/spfs/tree/main/poc">SAGE Reference Implementation for Σ-protocols and Fiat-Shamir</a>
+            </li>
+            <li>
+              <a href="https://github.com/mmaker/spfs/tree/main/poc">Sponge FiSh, a Rust library for Fiat-Shamir</a>
+            </li>
+          </div>
         </section>
 
         <section>
@@ -50,19 +62,6 @@ import Layout from '../layouts/Layout.astro';
             </li>
 
           </ul>
-          </div>
-        </section>
-
-        <section>
-          <h2 class="text-2xl font-semibold mb-4">Implementations</h2>
-          <div class="flex flex-col space-y-3">
-            To appear soon.
-            <!-- <li>
-              <a href="https://crates.io/crates/lox-zkp">Rust Library</a>
-            </li>
-            <li>
-              <a href="https://github.com/mmaker/spfs">Python Reference Implementation</a>
-            </li> -->
           </div>
         </section>
 
